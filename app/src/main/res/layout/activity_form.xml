@@ -34,7 +34,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nama Bangunan"/>
+                        android:text="Nama Bangunan*"/>
                     <EditText
                         android:id="@+id/nama_bangunan"
                         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                             android:id="@+id/jml_lantai_txt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Jumlah Lantai"/>
+                            android:text="Jumlah Lantai*"/>
                         <EditText
                             android:id="@+id/jml_lantai"
                             android:layout_below="@id/jml_lantai_txt"
@@ -76,7 +76,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Dibuat Thun"/>
+                            android:text="Dibuat Tahun*"/>
                         <EditText
                             android:id="@+id/thn_dibuat"
                             android:layout_below="@id/thn_dibuat_txt"
@@ -94,7 +94,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Alamat"/>
+                        android:text="Alamat*"/>
                     <EditText
                         android:id="@+id/alamat_bangunan"
                         android:layout_width="match_parent"
@@ -191,7 +191,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nama"/>
+                        android:text="Nama*"/>
                     <EditText
                         android:id="@+id/nama_person"
                         android:layout_width="match_parent"
@@ -207,7 +207,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Alamat"/>
+                        android:text="Alamat*"/>
                     <EditText
                         android:id="@+id/alamat_person"
                         android:layout_width="match_parent"
@@ -223,7 +223,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nomor Telephon"/>
+                        android:text="Nomor Telephon*"/>
                     <EditText
                         android:id="@+id/nomor_person"
                         android:layout_width="match_parent"

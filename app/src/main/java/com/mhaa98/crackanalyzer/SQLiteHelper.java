@@ -39,6 +39,31 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         statement.executeInsert();
 
     }
+
+    public void insertUsers(){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "INSERT INTO data_user VALUES(NULL,'users@gmail.com','masuk',0)";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.executeInsert();
+    }
+
+    public void sudahMasuk(int id){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "UPDATE data_user SET status = 1 WHERE id_user = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindDouble(1,(double) id);
+        statement.execute();
+        database.close();
+    }
+    public void sudahKeluar(int id){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "UPDATE data_user SET status = 0 WHERE id_user = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindDouble(1,(double) id);
+        statement.execute();
+        database.close();
+    }
+
     public void updateDataLevel(String data, double persen, int id){
         SQLiteDatabase database = getWritableDatabase();
         String sql = "UPDATE data_bangunan SET hasil_diagnosis = ?, tingkat_kepercayaan = ? WHERE id = ?";

@@ -71,7 +71,7 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
         byte[] image;
         String level="";
         double persen=0;
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto, hasil_diagnosis, tingkat_kepercayaan FROM data_bangunan WHERE id="+kode);
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto, hasil_diagnosis, tingkat_kepercayaan FROM data_bangunan WHERE id="+kode);
         while (cursor.moveToNext()){
             nama_b = cursor.getString(0);
             image = cursor.getBlob(1);
@@ -94,7 +94,7 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
         int jd_r=0;
         int jd_s=0;
         int jd_b=0;
-        Cursor c = MainActivity.mSQLiteHelper.getData("SELECT struktur, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kode);
+        Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT struktur, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kode);
         while (c.moveToNext()){
             if(c.getInt(0)==1){
                 jk++;

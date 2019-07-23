@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView imageViewIcon;
 
-    public static SQLiteHelper mSQLiteHelper;
 
 
     double tmpx, tmpy;
@@ -57,11 +56,17 @@ public class MainActivity extends AppCompatActivity {
 
     double d1, d2, d3, d4, dd1, dd2, dd3, dd4;
     String data_txt;
+    int kode_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Cursor cc = LoginActivity.mSQLiteHelper.getData("SELECT id_user FROM data_user WHERE status = 1");
+        while (cc.moveToNext()){
+            kode_user = cc.getInt(0);
+        }
 
         up = findViewById(R.id.upload_btn);
         up.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +80,32 @@ public class MainActivity extends AppCompatActivity {
         konvert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);
+                dialogDelete.setTitle("Logout!!");
+                dialogDelete.setMessage("Apa anda yakin untuk logout?");
+                dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try{
+                            LoginActivity.mSQLiteHelper.sudahKeluar(kode_user);
+                            Intent i = new Intent(MainActivity.this,LoginActivity.class);
+                            startActivity(i);
+                        }
+                        catch (Exception e){
+                            Log.e("error", e.getMessage());
+                        }
+                        updateList();
+                    }
+                });
+                dialogDelete.setNegativeButton("Cencel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialogDelete.show();
+
+
 //                saveToTxt();
             }
         });
@@ -93,19 +124,9 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new HistoryListAdapter(this, R.layout.history_layout, mList);
         mListView.setAdapter(mAdapter);
 
-        mSQLiteHelper = new SQLiteHelper(this, "kerusakan_bangunan.sqlite", null, 1);
-        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_bangunan(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "nama_bangunan VARCHAR, jumlah_lantai VARCHAR, tahun VARCHAR, alamat_bangunan VARCHAR, latitude VARCHAR, " +
-                "longitude VARCHAR, poto BLOB, nama VARCHAR, alamat VARCHAR, nomor_hp VARCHAR, hasil_diagnosis VARCHAR(3), tingkat_kepercayaan double)");
-
-        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_kerusakan(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "id_bangunan INTEGER, struktur INTEGER, level_kerusakan INTEGER)");
-
-        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_gambar(data_g VARCHAR)");
-
         //mSQLiteHelper.getReadableDatabase();
         //GET ALL DATA FROM SQLITE
-        Cursor cursor = mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
                 "longitude, nama, alamat, nomor_hp, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
         mList.clear();
         while (cursor.moveToNext()){
@@ -135,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor c = mSQLiteHelper.getData("SELECT id, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
+                Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
                 ArrayList<Integer> arrID = new ArrayList<Integer>();
                 ArrayList<Double> arrKepercayaan = new ArrayList<Double>();
                 while (c.moveToNext()){
@@ -165,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            Cursor c = mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
@@ -175,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 1){
-                            Cursor c = mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
@@ -246,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try{
-                    mSQLiteHelper.deleteData(id);
-                    mSQLiteHelper.deleteData2(id);
+                    LoginActivity.mSQLiteHelper.deleteData(id);
+                    LoginActivity.mSQLiteHelper.deleteData2(id);
                     Toast.makeText(MainActivity.this, "Penghapusan berhasil", Toast.LENGTH_SHORT).show();
                     finish();
                     overridePendingTransition(0, 0);
@@ -342,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateList() {
-        Cursor cursor = mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
                 "longitude, nama, alamat, nomor_hp FROM data_bangunan ORDER BY id DESC");
         mList.clear();
         while (cursor.moveToNext()){
@@ -506,11 +527,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         data_txt = d1+" "+d2+" "+d3+" "+d4+" "+dd1+" "+dd2+" "+dd3+" "+dd4;
-        mSQLiteHelper.insertDataGambar(data_txt);
+        LoginActivity.mSQLiteHelper.insertDataGambar(data_txt);
 
     }
     public void  saveToTxt(){
-        Cursor cursor = mSQLiteHelper.getData("SELECT * FROM data_gambar");
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_gambar");
         mList.clear();
         String data="";
         while (cursor.moveToNext()){

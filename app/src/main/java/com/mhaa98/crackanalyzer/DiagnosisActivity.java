@@ -66,7 +66,7 @@ public class DiagnosisActivity extends AppCompatActivity {
         TextView namaBg = findViewById(R.id.nama_bangunan_txt);
         imageViewIcon = findViewById(R.id.poto_bangunan2);
 
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto FROM data_bangunan WHERE id="+kode);
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto FROM data_bangunan WHERE id="+kode);
         while (cursor.moveToNext()){
             String nama_b = cursor.getString(0);
             byte[] image = cursor.getBlob(1);
@@ -116,7 +116,7 @@ public class DiagnosisActivity extends AppCompatActivity {
         persen_balok_rusak_ringan=0; persen_balok_rusak_sedang=0; persen_balok_rusak_berat=0;
         persen_dinding_rusak_ringan=0; persen_dinding_rusak_sedang=0; persen_dinding_rusak_berat=0;
 
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 1 ORDER BY id DESC");
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 1 ORDER BY id DESC");
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
             a++;
@@ -133,7 +133,7 @@ public class DiagnosisActivity extends AppCompatActivity {
         jml_kolom.setText(a+"");
         a=0;
 
-        cursor = MainActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 2 ORDER BY id DESC");
+        cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 2 ORDER BY id DESC");
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
             a++;
@@ -150,7 +150,7 @@ public class DiagnosisActivity extends AppCompatActivity {
         jml_balok.setText(a+"");
         a=0;
 
-        cursor = MainActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 3 ORDER BY id DESC");
+        cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, level_kerusakan FROM data_kerusakan WHERE id_bangunan="+kod+" AND struktur= 3 ORDER BY id DESC");
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
             a++;
@@ -634,7 +634,7 @@ public class DiagnosisActivity extends AppCompatActivity {
                     maxS=mm1[x];
                 }
             }
-            MainActivity.mSQLiteHelper.updateDataLevel(maxS,max, kode);
+            LoginActivity.mSQLiteHelper.updateDataLevel(maxS,max, kode);
 
             if(maxS.equals("1")){
                 System.out.println("Kerusakan adalah rusak ringan dengan probabilitas "+max);
@@ -661,7 +661,7 @@ public class DiagnosisActivity extends AppCompatActivity {
             startActivity(n);
         }
         else if (jum_min==1){
-            MainActivity.mSQLiteHelper.updateDataLevel(level_rusak[0],belief[0], kode);
+            LoginActivity.mSQLiteHelper.updateDataLevel(level_rusak[0],belief[0], kode);
             Intent n = new Intent(this, HasilDiagnosisActivity.class);
             Bundle bun = new Bundle();
             bun.putInt("id", kode);

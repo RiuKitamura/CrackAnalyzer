@@ -109,8 +109,8 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (nama_bg.getText().length() != 0 && lantai.getText().length() != 0 && tahun.getText().length() != 0
-                        && alamat_bg.getText().length() != 0 && lati.getText().length() != 0 && longi.getText().length() != 0
-                        && isi_gambar != false && nama.getText().length() != 0 && alamat.getText().length() != 0
+                        && alamat_bg.getText().length() != 0 && isi_gambar != false
+                        && nama.getText().length() != 0 && alamat.getText().length() != 0
                         && no_hp.getText().length() != 0) {
                     try {
                         System.out.println("nama b " + nama_bg.getText());
@@ -122,7 +122,7 @@ public class FormActivity extends AppCompatActivity {
                         System.out.println("nama " + nama.getText());
                         System.out.println("alamat " + alamat.getText());
                         System.out.println("nomor " + no_hp.getText());
-                        MainActivity.mSQLiteHelper.insertData(
+                        LoginActivity.mSQLiteHelper.insertData(
                                 nama_bg.getText().toString().trim(),
                                 lantai.getText().toString().trim(),
                                 tahun.getText().toString().trim(),
@@ -141,7 +141,7 @@ public class FormActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(FormActivity.this, "Harus diisi semua", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FormActivity.this, "Bertanda * harus diisi", Toast.LENGTH_SHORT).show();
                 }
             }
         });

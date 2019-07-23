@@ -77,7 +77,7 @@ public class UpdateActivity extends AppCompatActivity {
         });
         System.out.println("masuk");
         System.out.println("kode "+kode);
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan WHERE id="+kode);
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan WHERE id="+kode);
         mList.clear();
         while (cursor.moveToNext()){
             System.out.println("masuk dddddd");
@@ -125,28 +125,37 @@ public class UpdateActivity extends AppCompatActivity {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    MainActivity.mSQLiteHelper.updateData(
-                            edtNamaB.getText().toString().trim(),
-                            edtLantai.getText().toString().trim(),
-                            edtThn.getText().toString().trim(),
-                            edtAlamatB.getText().toString().trim(),
-                            edtLati.getText().toString().trim(),
-                            edtLongi.getText().toString().trim(),
-                            imageViewToByte(imageViewIcon),
-                            edtNama.getText().toString().trim(),
-                            edtAlamat.getText().toString().trim(),
-                            edtNomor.getText().toString().trim(),
-                            kode
+                if (edtNamaB.getText().length() != 0 && edtLantai.getText().length() != 0 && edtThn.getText().length() != 0
+                        && edtAlamatB.getText().length() != 0
+                        && edtNama.getText().length() != 0 && edtAlamat.getText().length() != 0
+                        && edtNomor.getText().length() != 0) {
+                    try{
+                        LoginActivity.mSQLiteHelper.updateData(
+                                edtNamaB.getText().toString().trim(),
+                                edtLantai.getText().toString().trim(),
+                                edtThn.getText().toString().trim(),
+                                edtAlamatB.getText().toString().trim(),
+                                edtLati.getText().toString().trim(),
+                                edtLongi.getText().toString().trim(),
+                                imageViewToByte(imageViewIcon),
+                                edtNama.getText().toString().trim(),
+                                edtAlamat.getText().toString().trim(),
+                                edtNomor.getText().toString().trim(),
+                                kode
 
-                    );
-                    Toast.makeText(getApplicationContext(), "Update sukses", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(UpdateActivity.this,MainActivity.class);
-                    startActivity(i);
+                        );
+                        Toast.makeText(getApplicationContext(), "Update sukses", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(UpdateActivity.this,MainActivity.class);
+                        startActivity(i);
+                    }
+                    catch (Exception error){
+                        Log.e("Update error", error.getMessage());
+                    }
                 }
-                catch (Exception error){
-                    Log.e("Update error", error.getMessage());
+                else{
+                    Toast.makeText(UpdateActivity.this, "Terdapat data yang kosong", Toast.LENGTH_SHORT).show();
                 }
+
                 //updateList();
             }
         });

@@ -42,10 +42,8 @@
                     android:layout_height="wrap_content"
                     android:text="Nama Bangunan"
                     android:layout_gravity="center"
-                    android:textSize="20dp"/>
+                    android:textSize="20dp"/>ee
             </LinearLayout>
-
-
 
             <RelativeLayout
                 android:id="@+id/kolom_btn"
@@ -139,6 +137,16 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Silahkan isi data dari masing-masing stuktur bangunan"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"/>
 
         </LinearLayout>
     </ScrollView>

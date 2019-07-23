@@ -186,7 +186,7 @@ public class AmbilGambarRetakan extends AppCompatActivity {
 
     void moveToUpdate(int id, int level){
         try{
-            MainActivity.mSQLiteHelper.updateDataKerusakan(level,id);
+            LoginActivity.mSQLiteHelper.updateDataKerusakan(level,id);
             onBackPressed();
         }
         catch (Exception e){

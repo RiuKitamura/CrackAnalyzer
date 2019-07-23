@@ -55,7 +55,7 @@ public class KondisiStruktur extends AppCompatActivity {
         mAdapter = new KondisiStrukturListAdapter(this, R.layout.list_kerusakan_layout, mList);
         mListView.setAdapter(mAdapter);
 
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
         mList.clear();
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
@@ -76,15 +76,15 @@ public class KondisiStruktur extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(stuktur==1){
-                    MainActivity.mSQLiteHelper.insertDataKerusakan(kode,1,0);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,1,0);
                     Toast.makeText(KondisiStruktur.this, "+ 1 Kolom", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==2){
-                    MainActivity.mSQLiteHelper.insertDataKerusakan(kode,2,0);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,2,0);
                     Toast.makeText(KondisiStruktur.this, "+ 1 Balok", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==3){
-                    MainActivity.mSQLiteHelper.insertDataKerusakan(kode,3,0);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,3,0);
                     Toast.makeText(KondisiStruktur.this, "+ 1 Dinding", Toast.LENGTH_SHORT).show();
                 }
                 finish();
@@ -106,7 +106,7 @@ public class KondisiStruktur extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            Cursor c = MainActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
@@ -116,7 +116,7 @@ public class KondisiStruktur extends AppCompatActivity {
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 1){
-                            Cursor c = MainActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
@@ -126,7 +126,7 @@ public class KondisiStruktur extends AppCompatActivity {
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 2){
-                            Cursor c = MainActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
@@ -153,12 +153,18 @@ public class KondisiStruktur extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            Cursor c = MainActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
                             }
-                            showDialogDelete(arrID.get(position));
+                            LoginActivity.mSQLiteHelper.deleteDataKerusakan(arrID.get(position));
+                            Toast.makeText(KondisiStruktur.this, "Penghapusan berhasil", Toast.LENGTH_SHORT).show();
+                            finish();
+                            overridePendingTransition(0, 0);
+                            startActivity(getIntent());
+                            overridePendingTransition(0, 0);
+                            //showDialogDelete(arrID.get(position));
                         }
                     }
                 });
@@ -175,7 +181,7 @@ public class KondisiStruktur extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try{
-                    MainActivity.mSQLiteHelper.deleteDataKerusakan(id);
+                    LoginActivity.mSQLiteHelper.deleteDataKerusakan(id);
                     Toast.makeText(KondisiStruktur.this, "Penghapusan berhasil", Toast.LENGTH_SHORT).show();
                     finish();
                     overridePendingTransition(0, 0);
@@ -198,7 +204,7 @@ public class KondisiStruktur extends AppCompatActivity {
     }
 
     private void updateList() {
-        Cursor cursor = MainActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan ORDER BY id ASC");
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan ORDER BY id ASC");
         mList.clear();
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
@@ -213,7 +219,7 @@ public class KondisiStruktur extends AppCompatActivity {
         mListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
-        cursor = MainActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+        cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
         mList.clear();
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
@@ -232,7 +238,7 @@ public class KondisiStruktur extends AppCompatActivity {
 
     void moveToUpdate(int id, int level){
         try{
-            MainActivity.mSQLiteHelper.updateDataKerusakan(level,id);
+            LoginActivity.mSQLiteHelper.updateDataKerusakan(level,id);
             updateList();
             finish();
             overridePendingTransition(0, 0);
