@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.BufferedWriter;
@@ -32,12 +33,13 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class AmbilGambarRetakan extends AppCompatActivity {
 
-    int kode,struktur;
+    int kode,struktur,pos;
     Button gallery,camera;
     ImageView baris1,baris2,baris3,baris4,baris0;
     String pathToFile;
     double tmpx, tmpy;
     int panjang, lebar, tengahx, tengahy;
+    TextView keterangan;
 
     double d1, d2, d3, d4, dd1, dd2, dd3, dd4;
     String data_txt;
@@ -59,19 +61,25 @@ public class AmbilGambarRetakan extends AppCompatActivity {
         baris4 = findViewById(R.id.baris_4);
         baris0 = findViewById(R.id.baris_0);
 
+        keterangan = findViewById(R.id.keterangan_struktur);
+
         Bundle b = getIntent().getExtras();
         kode = b.getInt("id");
         struktur = b.getInt("stuk");
-        Toast.makeText(this, ""+kode+" "+struktur, Toast.LENGTH_SHORT).show();
+        pos = b.getInt("pos");
+
 
         if(struktur==1){
             getSupportActionBar().setTitle("Ambil Gambar Kolom");
+            keterangan.setText("Kolom ke-"+(pos+1));
         }
         else if(struktur==2){
             getSupportActionBar().setTitle("Ambil Gambar Balok");
+            keterangan.setText("Balok ke-"+(pos+1));
         }
         else if(struktur==3){
             getSupportActionBar().setTitle("Ambil Gambar Dinding");
+            keterangan.setText("Dinding ke-"+(pos+1));
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -363,18 +371,18 @@ public class AmbilGambarRetakan extends AppCompatActivity {
 //        hasil=hasil*-1;
         System.out.println("hasil angka pengenalan "+hasil);
         if(hasil>1.5){
-            System.out.println("rusak berat");
-            Toast.makeText(this, "rusak berat", Toast.LENGTH_SHORT).show();
+            System.out.println(keterangan.getText()+" rusak berat");
+            Toast.makeText(this, keterangan.getText()+" rusak berat", Toast.LENGTH_SHORT).show();
             level=3;
         }
         else if(hasil>1 && hasil<=1.5){
-            System.out.println("rusak sedang");
-            Toast.makeText(this, "rusak sedang", Toast.LENGTH_SHORT).show();
+            System.out.println(keterangan.getText()+" rusak sedang");
+            Toast.makeText(this, keterangan.getText()+" rusak sedang", Toast.LENGTH_SHORT).show();
             level=2;
         }
         else if(hasil<=1){
-            System.out.println("rusak ringan");
-            Toast.makeText(this, "rusak ringan", Toast.LENGTH_SHORT).show();
+            System.out.println(keterangan.getText()+" rusak ringan");
+            Toast.makeText(this, keterangan.getText()+" rusak ringan", Toast.LENGTH_SHORT).show();
             level=1;
         }
 

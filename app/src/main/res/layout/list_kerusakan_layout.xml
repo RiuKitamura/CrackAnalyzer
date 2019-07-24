@@ -36,7 +36,7 @@
                 android:id="@+id/keterangan_level"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="55dp"
+                android:layout_marginRight="65dp"
                 android:background="@drawable/edit_text_bg"
                 android:text="Alamat bangunan"
                 android:layout_centerVertical="true"
@@ -55,7 +55,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/camera_icon"
-                android:background="@null"
+                android:padding="5dp"
+                android:background="@drawable/edit_text_bg"
                 android:layout_marginRight="10dp"/>
             <!--<TextView-->
             <!--android:layout_width="wrap_content"-->

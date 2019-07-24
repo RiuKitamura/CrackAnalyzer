@@ -60,14 +60,14 @@ public class KondisiStrukturListAdapter extends BaseAdapter {
             holder.strukturTxt = row.findViewById(R.id.list_txt);
             holder.addPoto = row.findViewById(R.id.add_foto);
 
-            holder.addPoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Model2 model = kolomList.get(position);
-                    Toast.makeText(context, "camera "+model.getId(), Toast.LENGTH_SHORT).show();
-
-                }
-            });
+//            holder.addPoto.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Model2 model = kolomList.get(position);
+//                    Toast.makeText(context, "camera "+model.getId(), Toast.LENGTH_SHORT).show();
+//
+//                }
+//            });
 
 //            holder.imageView = row.findViewById(R.id.poto_bangunan);
             row.setTag(holder);
@@ -80,11 +80,7 @@ public class KondisiStrukturListAdapter extends BaseAdapter {
         int a =position+1;
         holder.strukturTxt.setText(a+"");
         System.out.println("ini dia aaaa "+model.getLevel());
-        if(model.getLevel()==0){
-            holder.textKondisi.setText("Tidak rusak");
-            holder.textKondisi.setTextColor(Color.rgb(0,0,0));
-        }
-        else if(model.getLevel()==1){
+        if(model.getLevel()==1){
             holder.textKondisi.setText("Rusak Ringan");
             holder.textKondisi.setTextColor(Color.rgb(0,153,0));
         }
@@ -105,6 +101,7 @@ public class KondisiStrukturListAdapter extends BaseAdapter {
                 Bundle bun = new Bundle();
                 bun.putInt("id", model.getId());
                 bun.putInt("stuk",model.getStuktur());
+                bun.putInt("pos",position);
                 i.putExtras(bun);
                 context.getApplicationContext().startActivity(i);
 

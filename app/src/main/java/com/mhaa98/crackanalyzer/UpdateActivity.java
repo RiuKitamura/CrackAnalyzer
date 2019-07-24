@@ -231,7 +231,6 @@ public class UpdateActivity extends AppCompatActivity {
 //            Uri picUri = Uri.fromFile(f);
 //            galleryIntent.setData(picUri);
 //            this.sendBroadcast(galleryIntent);
-            Bitmap bitmap = BitmapFactory.decodeFile(pathToFile);
             CropImage.activity(Uri.fromFile(new File(pathToFile)))
                     .setAspectRatio(1,1)
                     .start(this);
@@ -272,8 +271,9 @@ public class UpdateActivity extends AppCompatActivity {
 
     private static byte[] imageViewToByte(ImageView image) {
         Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 500, false);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.WEBP, 0, stream);
+        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
     }

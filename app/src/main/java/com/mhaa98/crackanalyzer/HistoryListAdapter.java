@@ -1,6 +1,7 @@
 package com.mhaa98.crackanalyzer;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,11 @@ public class HistoryListAdapter extends BaseAdapter {
         System.out.println("jjjjjjjjkjkjkjkjkjkjkjkjjkkjkjkjkjkjkjkjkjjkjkjkjkj"+model.getKepercayaan());
         if(model.getKepercayaan()!=0){
             holder.imageView.setBackground(context.getResources().getDrawable(R.drawable.no_bg));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.done, context.getApplicationContext().getTheme()));
+            } else {
+                holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.done));
+            }
         }
 
 //        byte[] recordImage = model.getPoto();

@@ -38,7 +38,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button up, konvert;
+    Button up;
+    ImageButton konvert;
 
     ListView mListView;
     ArrayList<Model> mList;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);
                 dialogDelete.setTitle("Logout!!");
-                dialogDelete.setMessage("Apa anda yakin untuk logout?");
+                dialogDelete.setMessage("Apa anda yakin ingin logout?");
                 dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         updateList();
                     }
                 });
-                dialogDelete.setNegativeButton("Cencel", new DialogInterface.OnClickListener() {
+                dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -281,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 updateList();
             }
         });
-        dialogDelete.setNegativeButton("Cencel", new DialogInterface.OnClickListener() {
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

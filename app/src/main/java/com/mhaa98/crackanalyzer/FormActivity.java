@@ -112,6 +112,7 @@ public class FormActivity extends AppCompatActivity {
                         && alamat_bg.getText().length() != 0 && isi_gambar != false
                         && nama.getText().length() != 0 && alamat.getText().length() != 0
                         && no_hp.getText().length() != 0) {
+                    next.setEnabled(false);
                     try {
                         System.out.println("nama b " + nama_bg.getText());
                         System.out.println("lantai:" + lantai.getText());
@@ -258,7 +259,7 @@ public class FormActivity extends AppCompatActivity {
 //            Uri picUri = Uri.fromFile(f);
 //            galleryIntent.setData(picUri);
 //            this.sendBroadcast(galleryIntent);
-            Bitmap bitmap = BitmapFactory.decodeFile(pathToFile);
+//            Bitmap bitmap = BitmapFactory.decodeFile(pathToFile);
             CropImage.activity(Uri.fromFile(new File(pathToFile)))
                     .setAspectRatio(1,1)
                     .start(this);
@@ -327,8 +328,9 @@ public class FormActivity extends AppCompatActivity {
 
     private static byte[] imageViewToByte(ImageView image) {
         Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 500, 500, false);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.WEBP, 0, stream);
+        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
     }
@@ -372,6 +374,7 @@ public class FormActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(getApplicationContext(),"Ok" ,Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                     FormActivity.super.onBackPressed();
                 }
             });
