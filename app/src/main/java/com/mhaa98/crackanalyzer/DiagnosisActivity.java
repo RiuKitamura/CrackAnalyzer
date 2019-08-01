@@ -1,13 +1,18 @@
 package com.mhaa98.crackanalyzer;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -24,6 +29,7 @@ public class DiagnosisActivity extends AppCompatActivity {
     KondisiStrukturListAdapter mAdapter = null;
     int kod;
     int kode;
+    byte[] image;
 
     //variabel diagnosis
     int jum_gejala;
@@ -69,12 +75,20 @@ public class DiagnosisActivity extends AppCompatActivity {
         Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto FROM data_bangunan WHERE id="+kode);
         while (cursor.moveToNext()){
             String nama_b = cursor.getString(0);
-            byte[] image = cursor.getBlob(1);
+            image = cursor.getBlob(1);
 
             namaBg.setText(nama_b);
             imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(image,0,image.length));
 
         }
+
+        imageViewIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewDialog alert = new ViewDialog();
+                alert.showDialog(DiagnosisActivity.this);
+            }
+        });
 
         kolom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +115,28 @@ public class DiagnosisActivity extends AppCompatActivity {
                 diagnosis(kode);
             }
         });
+    }
+
+    public class ViewDialog {
+        public void showDialog(Activity activity) {
+            final Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCancelable(false);
+            dialog.setContentView(R.layout.show_image);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            ImageView gambar = dialog.findViewById(R.id.show_image2);
+            gambar.setImageBitmap(BitmapFactory.decodeByteArray(image,0,image.length));
+            ImageButton close = dialog.findViewById(R.id.close_image);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+
+        }
     }
 
     void refreshText(int kod){
@@ -553,7 +589,13 @@ public class DiagnosisActivity extends AppCompatActivity {
                     System.out.println("kkkkkkkkkk "+kk);
                     for(int x=0;x<persamaanS.length-2;x++){
                         if(persamaanS[x].equals("null")==false){
-                            persamaan[x]=persamaan[x]/(1-kk);
+                            try{
+                                persamaan[x]=persamaan[x]/(1-kk);
+                            }
+                            catch (Exception e){
+                                persamaan[x]=0;
+                            }
+
                         }
                     }
 

@@ -160,7 +160,10 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="4dp"/>
                     </RelativeLayout>
-
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Gambar Bangunan*"/>
                     <ImageView
                         android:id="@+id/add_photo_btn"
                         android:layout_marginTop="8dp"

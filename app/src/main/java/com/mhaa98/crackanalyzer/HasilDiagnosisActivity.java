@@ -1,12 +1,17 @@
 package com.mhaa98.crackanalyzer;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +24,7 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
     TextView hasil_diagnosis;
     TextView keterangan;
     ImageView gambar_bangunan,close;
+    byte[] image;
 
     TextView jml_kolom, jml_balok, jml_dinding, k_rusak_r, k_rusak_s, k_rusak_b;
     TextView b_rusak_r, b_rusak_s, b_rusak_b, d_rusak_r, d_rusak_s, d_rusak_b;
@@ -68,7 +74,6 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
 //        persen = getIntent().getExtras().getDouble("persen");
 
         String nama_b;
-        byte[] image;
         String level="";
         double persen=0;
         Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT nama_bangunan, poto, hasil_diagnosis, tingkat_kepercayaan FROM data_bangunan WHERE id="+kode);
@@ -170,6 +175,36 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
         else if(level.equals("23")) {
             hasil_diagnosis.setText("Rusak Sedang/Berat");
             keterangan.setText("Kerusakan adalah rusak sedang dan berat dengan probabilitas "+persen);
+        }
+
+        gambar_bangunan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ViewDialog alert = new ViewDialog();
+                alert.showDialog(HasilDiagnosisActivity.this);
+            }
+        });
+    }
+
+    public class ViewDialog {
+        public void showDialog(Activity activity) {
+            final Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCancelable(false);
+            dialog.setContentView(R.layout.show_image);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            ImageView gambar = dialog.findViewById(R.id.show_image2);
+            gambar.setImageBitmap(BitmapFactory.decodeByteArray(image,0,image.length));
+            ImageButton close = dialog.findViewById(R.id.close_image);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+
         }
     }
 
