@@ -283,6 +283,7 @@ public class KondisiStruktur extends AppCompatActivity {
         try{
             LoginActivity.mSQLiteHelper.updateDataKerusakan(level,id);
             mList.set(pos, new Model2(id,kode,stuktur,level));
+
 //            updateList();
             mAdapter.notifyDataSetChanged();
 //            finish();

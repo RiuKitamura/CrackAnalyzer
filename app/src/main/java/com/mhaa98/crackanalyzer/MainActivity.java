@@ -39,7 +39,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     Button up;
-    ImageButton konvert;
+    ImageButton logout;
 
     ListView mListView;
     ArrayList<Model> mList;
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 //                ambilDataGambar();
             }
         });
-        konvert = findViewById(R.id.convert);
-        konvert.setOnClickListener(new View.OnClickListener() {
+        logout = findViewById(R.id.convert);
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);

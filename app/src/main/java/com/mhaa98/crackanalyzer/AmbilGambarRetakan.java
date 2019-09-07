@@ -279,6 +279,11 @@ public class AmbilGambarRetakan extends AppCompatActivity {
         fitur[0]=d1; fitur[1]=d2; fitur[2]=d3; fitur[3]=d4;
         fitur[4]=dd1; fitur[5]=dd2; fitur[6]=dd3; fitur[7]=dd4;
         System.out.println(data_txt);
+
+        for(int i=0;i<fitur.length;i++){
+            System.out.print(fitur[i]+" ");
+        }
+        System.out.println("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
 //        saveToTxt(data_txt);
         kenaliPola();
 
