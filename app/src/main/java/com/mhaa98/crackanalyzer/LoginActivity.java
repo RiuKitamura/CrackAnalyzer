@@ -21,17 +21,24 @@ public class LoginActivity extends AppCompatActivity {
 
         mSQLiteHelper = new SQLiteHelper(this, "kerusakan_bangunan.sqlite", null, 1);
 
-        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_bangunan(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "nama_bangunan VARCHAR, jumlah_lantai VARCHAR, tahun VARCHAR, alamat_bangunan VARCHAR, latitude VARCHAR, " +
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_bangunan( id VARCHAR PRIMARY KEY," +
+                "nama_bangunan VARCHAR, jumlah_lantai VARCHAR, tahun VARCHAR, alamat_bangunan VARCHAR, provinsi VARCHAR, " +
+                "kota VARCHAR, kecamatan VARCHAR, kode_pos VARCHAR, latitude VARCHAR, " +
                 "longitude VARCHAR, poto BLOB, nama VARCHAR, alamat VARCHAR, nomor_hp VARCHAR, hasil_diagnosis VARCHAR(3), tingkat_kepercayaan double)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_kerusakan(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "id_bangunan INTEGER, struktur INTEGER, level_kerusakan INTEGER)");
+                "id_bangunan VARCHAR, struktur INTEGER, level_kerusakan INTEGER, poto_kondisi BLOB)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_gambar(data_g VARCHAR)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_user (id_user INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email VARCHAR, pass VARCHAR, status INTEGER)");
+
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_gejala(id_gejala INTEGER, " +
+                "nama_gejala VARCHAR)");
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_level(id_level INTEGER, " +
+                "level VARCHAR, kondisi VARCHAR, penaganan VARCHAR)");
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_rules(level INTEGER, gejala INTEGER, cf DOUBLE)");
 
         boolean s = false;
         Cursor cursor = mSQLiteHelper.getData("SELECT status FROM data_user");
@@ -54,6 +61,19 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        boolean terisi = false;
+        Cursor curs = mSQLiteHelper.getData("SELECT id_gejala FROM ds_gejala");
+        while (curs.moveToNext()){
+            terisi = true;
+            break;
+        }
+
+        if(terisi == false){
+            mSQLiteHelper.insertGejala();
+            mSQLiteHelper.insertLevel();
+            mSQLiteHelper.insertRules();
+        }
     }
     @Override
     public void onBackPressed() {

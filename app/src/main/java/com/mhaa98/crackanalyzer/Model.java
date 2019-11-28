@@ -1,7 +1,7 @@
 package com.mhaa98.crackanalyzer;
 
 public class Model {
-    private int id;
+    private String id;
     private String nama_b;
     private String lantai;
     private String thn;
@@ -14,7 +14,7 @@ public class Model {
     private String hp;
     private double kepercayaan;
 
-    public Model(int id, String nama_b, String lantai, String thn, String alamat_b, String lati,
+    public Model(String id, String nama_b, String lantai, String thn, String alamat_b, String lati,
                  String longi, byte[] poto, String nama, String alamat, String hp){
         this.id = id;
         this.nama_b = nama_b;
@@ -28,7 +28,7 @@ public class Model {
         this.alamat = alamat;
         this.hp = hp;
     }
-    public Model(int id, String nama_b, String lantai, String thn, String alamat_b, String lati,
+    public Model(String id, String nama_b, String lantai, String thn, String alamat_b, String lati,
                  String longi, String nama, String alamat, String hp, double kepercayaan){
         this.id = id;
         this.nama_b = nama_b;
@@ -51,11 +51,11 @@ public class Model {
         this.kepercayaan = kepercayaan;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

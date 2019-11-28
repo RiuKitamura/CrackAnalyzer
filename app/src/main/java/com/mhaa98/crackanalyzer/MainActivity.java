@@ -36,6 +36,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     Button up;
@@ -73,8 +80,52 @@ public class MainActivity extends AppCompatActivity {
         up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Belum tersedia", Toast.LENGTH_SHORT).show();
-//                ambilDataGambar();
+                Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan");
+                while (cursor.moveToNext()){
+                    int id = cursor.getInt(0);
+                    RequestBody nama_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(1));
+                    RequestBody lantai = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(2));
+                    RequestBody thn = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(3));
+                    RequestBody alamat_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(4));
+                    String lat = cursor.getString(5);
+                    String longg = cursor.getString(6);
+                    if(lat.equals("")||longg.equals(""))
+                    {   lat = "0";
+                        longg = "0";
+                    }
+                    RequestBody lati = RequestBody.create(MediaType.parse("text/plain"), lat);
+                    RequestBody longi = RequestBody.create(MediaType.parse("text/plain"), longg);
+                    byte[] poto = cursor.getBlob(7);
+                    RequestBody nama = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(8));
+                    RequestBody alamat = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(9));
+                    RequestBody nomor = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(10));
+                    RequestBody hasil = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(11));
+                    RequestBody kepercayaan = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursor.getDouble(12)));
+
+
+                    RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), poto);
+                    MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
+                            cursor.getString(1), photoBody);
+
+                    //System.out.println(id+" "+nama_b+" "+lantai+" "+thn+" "+alamat_b+" "+lati+" "+longi+" "+nama+" "+alamat+" "+nomor+" "+hasil+" "+kepercayaan);
+
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<ValueModel> call = apiInterface.insertData(nama_b,lantai,thn,alamat_b,lati,longi,photoPart,nama,alamat,nomor,hasil,kepercayaan);
+                    call.enqueue(new Callback<ValueModel>() {
+                        @Override
+                        public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                            String msg = response.body().getMessage();
+                            System.out.println("Status: "+ msg);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ValueModel> call, Throwable t) {
+                            System.out.println("Gagal mengirim!");
+                        }
+                    });
+                }
+                //Toast.makeText(MainActivity.this, "Belum tersedia", Toast.LENGTH_SHORT).show();
+                //ambilDataGambar();
             }
         });
         logout = findViewById(R.id.convert);
@@ -131,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 "longitude, nama, alamat, nomor_hp, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
         mList.clear();
         while (cursor.moveToNext()){
-            int id = cursor.getInt(0);
+            String id = cursor.getString(0);
             String nama_b = cursor.getString(1);
             String lantai = cursor.getString(2);
             String thn = cursor.getString(3);
@@ -148,20 +199,25 @@ public class MainActivity extends AppCompatActivity {
 
         }
         mAdapter.notifyDataSetChanged();
-        TextView text = findViewById(R.id.text_kosong);
-        text.setText("");
+
+        TextView pesan = findViewById(R.id.pesan);
+        ImageView imgPesan = findViewById(R.id.pesan_img);
+
+        pesan.setVisibility(View.GONE);
+        imgPesan.setVisibility(View.GONE);
         if(mList.size()==0){
-            text.setText("Data diagnosis masih kosong");
+            pesan.setVisibility(View.VISIBLE);
+            imgPesan.setVisibility(View.VISIBLE);
         }
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
-                ArrayList<Integer> arrID = new ArrayList<Integer>();
+                ArrayList<String> arrID = new ArrayList<String>();
                 ArrayList<Double> arrKepercayaan = new ArrayList<Double>();
                 while (c.moveToNext()){
-                    arrID.add(c.getInt(0));
+                    arrID.add(c.getString(0));
                     arrKepercayaan.add(c.getDouble(1));
                 }
 
@@ -188,9 +244,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
                             Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
-                            ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<String> arrID = new ArrayList<String>();
                             while (c.moveToNext()){
-                                arrID.add(c.getInt(0));
+                                arrID.add(c.getString(0));
                             }
                             moveToUpdate(arrID.get(position));
 
@@ -198,9 +254,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (which == 1){
                             Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
-                            ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<String> arrID = new ArrayList<String>();
                             while (c.moveToNext()){
-                                arrID.add(c.getInt(0));
+                                arrID.add(c.getString(0));
                             }
                             showDialogDelete(arrID.get(position));
                         }
@@ -244,23 +300,23 @@ public class MainActivity extends AppCompatActivity {
         return have_MobileData||have_WIFI;
     }
 
-    void moveToDiagonis(final int id){
+    void moveToDiagonis(final String id){
         Intent i = new Intent(this, DiagnosisActivity.class);
         Bundle bun = new Bundle();
-        bun.putInt("id", id);
+        bun.putString("id", id);
         i.putExtras(bun);
         startActivity(i);
     }
 
-    void  moveToHasilDiagnosis(final  int id){
+    void  moveToHasilDiagnosis(final  String id){
         Intent i = new Intent(this, HasilDiagnosisActivity.class);
         Bundle bun = new Bundle();
-        bun.putInt("id", id);
+        bun.putString("id", id);
         i.putExtras(bun);
         startActivity(i);
     }
 
-    private void showDialogDelete(final int id) {
+    private void showDialogDelete(final String id) {
         AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);
         dialogDelete.setTitle("Warning!!");
         dialogDelete.setMessage("Apa anda yakin untuk menghapus?");
@@ -291,10 +347,10 @@ public class MainActivity extends AppCompatActivity {
         dialogDelete.show();
     }
 
-    public void moveToUpdate(final int position){
+    public void moveToUpdate(final String position){
         Intent i = new Intent(this, UpdateActivity.class);
         Bundle bun = new Bundle();
-        bun.putInt("id", position);
+        bun.putString("id", position);
         i.putExtras(bun);
         startActivity(i);
     }

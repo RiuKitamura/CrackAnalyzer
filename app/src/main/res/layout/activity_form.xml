@@ -91,12 +91,85 @@
                             android:layout_marginBottom="4dp"
                             android:background="@drawable/edit_text_bg"/>
                     </RelativeLayout>
+                    <Button
+                        android:id="@+id/location_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cari alamat"
+                        android:layout_below="@id/longitude_txt"
+                        android:layout_toRightOf="@id/longitude"
+                        android:background="@drawable/button_bg"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:textAllCaps="false"
+                        android:layout_gravity="center_horizontal"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Alamat*"/>
                     <EditText
                         android:id="@+id/alamat_bangunan"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:ems="10"
+                        android:maxLength="100"
+                        android:inputType="textMultiLine"
+                        android:padding="10dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/edit_text_bg"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Provinsi*"/>
+                    <EditText
+                        android:id="@+id/alamat_prov_bangunan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:maxLength="100"
+                        android:inputType="text"
+                        android:padding="10dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/edit_text_bg"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kabupaten/Kota*"/>
+                    <EditText
+                        android:id="@+id/alamat_kota_bangunan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:maxLength="100"
+                        android:inputType="text"
+                        android:padding="10dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/edit_text_bg"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kecamatan*"/>
+                    <EditText
+                        android:id="@+id/alamat_kec_bangunan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:maxLength="100"
+                        android:inputType="text"
+                        android:padding="10dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/edit_text_bg"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kode Pos"/>
+                    <EditText
+                        android:id="@+id/alamat_pos_bangunan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -148,17 +221,7 @@
                             android:background="@drawable/edit_text_bg"
                             android:layout_marginRight="10dp"
                             android:editable="false"/>
-                        <ImageButton
-                            android:id="@+id/location_btn"
-                            android:layout_width="40dp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/location"
-                            android:padding="10dp"
-                            android:layout_below="@id/longitude_txt"
-                            android:layout_toRightOf="@id/longitude"
-                            android:background="@drawable/edit_text_bg"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="4dp"/>
+
                     </RelativeLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -210,7 +273,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Alamat*"/>
+                        android:text="Alamat"/>
                     <EditText
                         android:id="@+id/alamat_person"
                         android:layout_width="match_parent"

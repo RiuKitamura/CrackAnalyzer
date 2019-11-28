@@ -30,6 +30,7 @@
             android:textAlignment="center"
             android:text="Ambil gambar retakan dari struktur bangunan, seperti contoh di bawah"/>
         <ImageView
+            android:id="@+id/imv_gambar_retakan"
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:layout_gravity="center_horizontal"

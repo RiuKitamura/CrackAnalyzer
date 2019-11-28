@@ -46,15 +46,28 @@
 
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/pesan_img"
+        android:layout_below="@id/nav_top"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/ic_undraw_empty_xct9"
+        android:scaleType="fitCenter"/>
+
     <TextView
-        android:id="@+id/text_kosong"
+        android:id="@+id/pesan"
+        android:layout_below="@id/pesan_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_below="@id/nav_top"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginVertical="20dp"
         android:layout_centerHorizontal="true"
-        android:textSize="20sp"
-        android:layout_margin="20dp"/>
+        android:textAlignment="center"
+        android:text="Data riwayat diagnosis bangunan\nmasih kosong"/>
+
 
     <ListView
         android:id="@+id/list1"

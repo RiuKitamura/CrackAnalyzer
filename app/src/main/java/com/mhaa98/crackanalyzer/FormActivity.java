@@ -4,19 +4,26 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +31,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -40,7 +48,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -49,8 +62,7 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class FormActivity extends AppCompatActivity {
 
-    private static final int RC_CAMERA_AND_LOCATION = 2;
-    EditText nama_bg, lantai, tahun, alamat_bg, lati, longi, nama, alamat, no_hp;
+    EditText nama_bg, lantai, tahun, alamat_bg, kota, kec, pos,lati, longi, nama, alamat, prov, no_hp;
     ImageView poto;
     Button next;
 
@@ -59,13 +71,15 @@ public class FormActivity extends AppCompatActivity {
     String pathToFile;
 
     boolean isi_gambar;
-
-    ImageButton gps;
+    LocationManager locationManager;
+    Button gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         getSupportActionBar().setTitle("Formulir");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -78,7 +92,6 @@ public class FormActivity extends AppCompatActivity {
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(FormActivity.this, "Pastikan gps aktif", Toast.LENGTH_SHORT).show();
                 methodRequiresTwoPermission();
             }
         });
@@ -87,6 +100,10 @@ public class FormActivity extends AppCompatActivity {
         lantai = (EditText) findViewById(R.id.jml_lantai);
         tahun = (EditText) findViewById(R.id.thn_dibuat);
         alamat_bg = (EditText) findViewById(R.id.alamat_bangunan);
+        prov = findViewById(R.id.alamat_prov_bangunan);
+        kota = findViewById(R.id.alamat_kota_bangunan);
+        kec = findViewById(R.id.alamat_kec_bangunan);
+        pos = findViewById(R.id.alamat_pos_bangunan);
         lati = (EditText) findViewById(R.id.latitude);
         longi = (EditText) findViewById(R.id.longitude);
         poto = findViewById(R.id.add_photo_btn);
@@ -109,9 +126,9 @@ public class FormActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (nama_bg.getText().length() != 0 && lantai.getText().length() != 0 && tahun.getText().length() != 0
-                        && alamat_bg.getText().length() != 0 && isi_gambar != false
-                        && nama.getText().length() != 0 && alamat.getText().length() != 0
-                        && no_hp.getText().length() != 0) {
+                        && alamat_bg.getText().length() != 0 && prov.getText().length() != 0
+                        && kota.getText().length() != 0 && kec.getText().length() != 0&& isi_gambar != false
+                        && nama.getText().length() != 0 && no_hp.getText().length() != 0) {
                     next.setEnabled(false);
                     try {
                         System.out.println("nama b " + nama_bg.getText());
@@ -123,20 +140,42 @@ public class FormActivity extends AppCompatActivity {
                         System.out.println("nama " + nama.getText());
                         System.out.println("alamat " + alamat.getText());
                         System.out.println("nomor " + no_hp.getText());
+
+                        long time = System.currentTimeMillis();
+
+                        String id = time+pos.getText().toString();
+
+                        System.out.println("kkkkkkkkkkkkkk "+id);
+
                         LoginActivity.mSQLiteHelper.insertData(
                                 nama_bg.getText().toString().trim(),
                                 lantai.getText().toString().trim(),
                                 tahun.getText().toString().trim(),
                                 alamat_bg.getText().toString().trim(),
+                                prov.getText().toString().trim(),
+                                kota.getText().toString().trim(),
+                                kec.getText().toString().trim(),
+                                pos.getText().toString().trim(),
                                 lati.getText().toString().trim(),
                                 longi.getText().toString().trim(),
                                 imageViewToByte(poto),
                                 nama.getText().toString().trim(),
                                 alamat.getText().toString().trim(),
-                                no_hp.getText().toString().trim()
+                                no_hp.getText().toString().trim(),
+                                id
                         );
                         Toast.makeText(FormActivity.this, "Sukses", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(FormActivity.this, MainActivity.class);
+                        Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
+                        String idTmp="";
+                        while (c.moveToNext()){
+                            idTmp = c.getString(0);
+                            break;
+                        }
+                        Intent i = new Intent(FormActivity.this, DiagnosisActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Bundle bun = new Bundle();
+                        bun.putString("id", idTmp);
+                        i.putExtras(bun);
                         startActivity(i);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -148,7 +187,7 @@ public class FormActivity extends AppCompatActivity {
         });
     }
 
-    @AfterPermissionGranted(RC_CAMERA_AND_LOCATION)
+    @AfterPermissionGranted(99)
     private void methodRequiresTwoPermission() {
         String[] perms = {Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION};
         if (EasyPermissions.hasPermissions(this, perms)) {
@@ -176,16 +215,14 @@ public class FormActivity extends AppCompatActivity {
 
                                 Log.d("My Current location", "Lat : " + location.getLatitude() + " Long : " + location.getLongitude());
                                 // Display in Toast
-
-                                lati.setText(location.getLatitude() + "");
-                                longi.setText(location.getLongitude() + "");
+                                getAddress(location.getLatitude(), location.getLongitude());
 
                             }
                         }
                     });
         } else {
             // Do not have permissions, request them now
-            EasyPermissions.requestPermissions(this, "location rationale", RC_CAMERA_AND_LOCATION, perms);
+            EasyPermissions.requestPermissions(this, "location rationale", 99, perms);
         }
     }
 
@@ -214,16 +251,15 @@ public class FormActivity extends AppCompatActivity {
                         }
                     }
 
-
                 } else if (items[i].equals("Gallery")) {
 
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    intent.setType("image/*");
-                    //startActivityForResult(intent.createChooser(intent, "Select File"), SELECT_FILE);
-                    startActivityForResult(intent, CAMERA_REQUEST_CODE2);
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.setType("image/*");
+                        //startActivityForResult(intent.createChooser(intent, "Select File"), SELECT_FILE);
+                        startActivityForResult(intent, CAMERA_REQUEST_CODE2);
 
                 } else if (items[i].equals("Cancel")) {
-                    dialogInterface.dismiss();
+                        dialogInterface.dismiss();
                 }
             }
         });
@@ -388,5 +424,36 @@ public class FormActivity extends AppCompatActivity {
 
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    public void getAddress(double lat, double lng) {
+        Geocoder geocoder = new Geocoder(FormActivity.this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+//            String add = obj.getAddressLine(0);
+//            add = add + "\n" + obj.getCountryName();
+//            add = add + "\n" + obj.getCountryCode();
+//            add = add + "\n" + obj.getAdminArea();
+//            add = add + "\n" + obj.getPostalCode();
+//            add = add + "\n" + obj.getSubAdminArea();
+//            add = add + "\n" + obj.getLocality();
+//            add = add + "\n" + obj.getSubThoroughfare();
+
+            alamat_bg.setText(obj.getAddressLine(0)+"");
+            prov.setText(obj.getAdminArea()+"");
+            kota.setText(obj.getSubAdminArea()+"");
+            kec.setText(obj.getLocality()+"");
+            pos.setText(obj.getPostalCode());
+            lati.setText(lat + "");
+            longi.setText(lng + "");
+
+
+            // TennisAppActivity.showDialog(add);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            Toast.makeText(this, "Tidak ada koneksi", Toast.LENGTH_SHORT).show();
+        }
     }
 }

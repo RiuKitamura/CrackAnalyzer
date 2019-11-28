@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 public class HasilDiagnosisActivity extends AppCompatActivity {
 
-    int kode;
+    String kode;
     String level;
     double persen;
     TextView nama_bangunan;
@@ -69,7 +69,7 @@ public class HasilDiagnosisActivity extends AppCompatActivity {
         d_rusak_b = findViewById(R.id.jum_berat_k_d);
 
 
-        kode = getIntent().getExtras().getInt("id");
+        kode = getIntent().getExtras().getString("id");
 //        level = getIntent().getExtras().getString("level");
 //        persen = getIntent().getExtras().getDouble("persen");
 

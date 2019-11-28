@@ -27,7 +27,8 @@ public class KondisiStruktur extends AppCompatActivity {
     final int CAMERA_REQUEST_CODE1 = 1;
     final int CAMERA_REQUEST_CODE2 = 0;
     ImageButton add_kolom;
-    int kode, stuktur;
+    String kode;
+    int stuktur;
     String stuk;
 
     @Override
@@ -39,7 +40,7 @@ public class KondisiStruktur extends AppCompatActivity {
 
         Bundle b = getIntent().getExtras();
 
-        kode = b.getInt("id");
+        kode = b.getString("id");
         stuktur = b.getInt("stuk");
         stuk="";
         System.out.println("ini "+kode+" dan "+stuktur);
@@ -62,11 +63,11 @@ public class KondisiStruktur extends AppCompatActivity {
         mAdapter = new KondisiStrukturListAdapter(this, R.layout.list_kerusakan_layout, mList);
         mListView.setAdapter(mAdapter);
 
-        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan='"+kode+"' AND struktur="+stuktur+" ORDER BY id ASC");
         mList.clear();
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
-            int id_bangunan = cursor.getInt(1);
+            String id_bangunan = cursor.getString(1);
             int struktur = cursor.getInt(2);
             int level = cursor.getInt(3);
             System.out.println("leve kerusakan = "+level);
@@ -88,11 +89,11 @@ public class KondisiStruktur extends AppCompatActivity {
             public void onClick(View v) {
                 info.setText("");
                 if(stuktur==1){
-                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,1,1);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,1,0);
                     Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id DESC");
                     while (cursor.moveToNext()){
                         int id = cursor.getInt(0);
-                        int id_bangunan = cursor.getInt(1);
+                        String id_bangunan = cursor.getString(1);
                         int struktur = cursor.getInt(2);
                         int level = cursor.getInt(3);
                         System.out.println("leve kerusakan = "+level);
@@ -102,11 +103,11 @@ public class KondisiStruktur extends AppCompatActivity {
                     Toast.makeText(KondisiStruktur.this, "+ 1 Kolom", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==2){
-                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,2,1);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,2,0);
                     Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id DESC");
                     while (cursor.moveToNext()){
                         int id = cursor.getInt(0);
-                        int id_bangunan = cursor.getInt(1);
+                        String id_bangunan = cursor.getString(1);
                         int struktur = cursor.getInt(2);
                         int level = cursor.getInt(3);
                         System.out.println("leve kerusakan = "+level);
@@ -116,12 +117,12 @@ public class KondisiStruktur extends AppCompatActivity {
                     Toast.makeText(KondisiStruktur.this, "+ 1 Balok", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==3){
-                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,3,1);
+                    LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,3,0);
                     Toast.makeText(KondisiStruktur.this, "+ 1 Dinding", Toast.LENGTH_SHORT).show();
                     Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id DESC");
                     while (cursor.moveToNext()){
                         int id = cursor.getInt(0);
-                        int id_bangunan = cursor.getInt(1);
+                        String id_bangunan = cursor.getString(1);
                         int struktur = cursor.getInt(2);
                         int level = cursor.getInt(3);
                         System.out.println("leve kerusakan = "+level);
@@ -140,7 +141,7 @@ public class KondisiStruktur extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                CharSequence[] items = {"Rusak Ringan", "Rusak Sedang", "Rusak Berat"};
+                CharSequence[] items = {"Tidak Rusak", "Rusak Ringan", "Rusak Sedang", "Rusak Berat"};
 
                 AlertDialog.Builder dialog = new AlertDialog.Builder(KondisiStruktur.this);
 
@@ -154,7 +155,7 @@ public class KondisiStruktur extends AppCompatActivity {
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
                             }
-                            moveToUpdate(position,arrID.get(position), 1);
+                            moveToUpdate(position,arrID.get(position), 0);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
@@ -164,11 +165,21 @@ public class KondisiStruktur extends AppCompatActivity {
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
                             }
-                            moveToUpdate(position,arrID.get(position), 2);
+                            moveToUpdate(position,arrID.get(position), 1);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 2){
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            while (c.moveToNext()){
+                                arrID.add(c.getInt(0));
+                            }
+                            moveToUpdate(position,arrID.get(position), 2);
+
+                            //showDialogUpdate(MainActivity.this, arrID.get(position));
+                        }
+                        if (which == 3){
                             Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
                             while (c.moveToNext()){
@@ -266,7 +277,7 @@ public class KondisiStruktur extends AppCompatActivity {
         mList.clear();
         while (cursor.moveToNext()){
             int id = cursor.getInt(0);
-            int id_bangunan = cursor.getInt(1);
+            String id_bangunan = cursor.getString(1);
             int struktur = cursor.getInt(2);
             int level = cursor.getInt(3);
             mList.add(new Model2(id, id_bangunan,struktur,level));

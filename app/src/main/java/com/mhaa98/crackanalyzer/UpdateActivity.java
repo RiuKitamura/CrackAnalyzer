@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,6 +53,8 @@ public class UpdateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         mList = new ArrayList<>();
 
         imageViewIcon = findViewById(R.id.up_add_photo_btn);
@@ -59,6 +62,10 @@ public class UpdateActivity extends AppCompatActivity {
         final EditText edtLantai = findViewById(R.id.up_jml_lantai);
         final EditText edtThn = findViewById(R.id.up_thn_dibuat);
         final EditText edtAlamatB = findViewById(R.id.up_alamat_bangunan);
+        final EditText edtProv = findViewById(R.id.up_alamat_prov_bangunan);
+        final EditText edtKota = findViewById(R.id.up_alamat_kota_bangunan);
+        final EditText edtKec = findViewById(R.id.up_alamat_kec_bangunan);
+        final EditText edtPos = findViewById(R.id.up_alamat_pos_bangunan);
         final EditText edtLati = findViewById(R.id.up_latitude);
         final EditText edtLongi = findViewById(R.id.up_longitude);
         final EditText edtNama = findViewById(R.id.up_nama_person);
@@ -66,7 +73,7 @@ public class UpdateActivity extends AppCompatActivity {
         final EditText edtNomor = findViewById(R.id.up_nomor_person);
         Button btnUpdate = findViewById(R.id.update_btn);
 
-        final int kode = getIntent().getExtras().getInt("id");
+        final String kode = getIntent().getExtras().getString("id");
 
         imageViewIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,21 +84,25 @@ public class UpdateActivity extends AppCompatActivity {
         });
         System.out.println("masuk");
         System.out.println("kode "+kode);
-        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan WHERE id="+kode);
+        Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan WHERE id='"+kode+"'");
         mList.clear();
         while (cursor.moveToNext()){
             System.out.println("masuk dddddd");
-            int id = cursor.getInt(0);
+            String id = cursor.getString(0);
             String nama_b = cursor.getString(1);
             String lantai = cursor.getString(2);
             String thn = cursor.getString(3);
             String alamat_b = cursor.getString(4);
-            String lati = cursor.getString(5);
-            String longi = cursor.getString(6);
-            byte[] poto = cursor.getBlob(7);
-            String nama = cursor.getString(8);
-            String alamat = cursor.getString(9);
-            String nomor = cursor.getString(10);
+            String alamat_prov = cursor.getString(5);
+            String alamat_kota = cursor.getString(6);
+            String alamat_kec = cursor.getString(7);
+            String alamat_pos = cursor.getString(8);
+            String lati = cursor.getString(9);
+            String longi = cursor.getString(10);
+            byte[] poto = cursor.getBlob(11);
+            String nama = cursor.getString(12);
+            String alamat = cursor.getString(13);
+            String nomor = cursor.getString(14);
 
             System.out.println("nama b "+nama_b);
             System.out.println("lantai:" +lantai);
@@ -107,6 +118,10 @@ public class UpdateActivity extends AppCompatActivity {
             edtLantai.setText(lantai);
             edtThn.setText(thn);
             edtAlamatB.setText(alamat_b);
+            edtProv.setText(alamat_prov);
+            edtKota.setText(alamat_kota);
+            edtKec.setText(alamat_kec);
+            edtPos.setText(alamat_pos);
             edtLati.setText(lati);
             edtLongi.setText(longi);
             imageViewIcon.setImageBitmap(BitmapFactory.decodeByteArray(poto,0,poto.length));
@@ -126,15 +141,18 @@ public class UpdateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (edtNamaB.getText().length() != 0 && edtLantai.getText().length() != 0 && edtThn.getText().length() != 0
-                        && edtAlamatB.getText().length() != 0
-                        && edtNama.getText().length() != 0 && edtAlamat.getText().length() != 0
-                        && edtNomor.getText().length() != 0) {
+                        && edtAlamatB.getText().length() != 0 && edtKota.getText().length() != 0 && edtProv.getText().length() != 0
+                        && edtKec.getText().length() != 0 && edtNama.getText().length() != 0 && edtNomor.getText().length() != 0) {
                     try{
                         LoginActivity.mSQLiteHelper.updateData(
                                 edtNamaB.getText().toString().trim(),
                                 edtLantai.getText().toString().trim(),
                                 edtThn.getText().toString().trim(),
                                 edtAlamatB.getText().toString().trim(),
+                                edtProv.getText().toString().trim(),
+                                edtKota.getText().toString().trim(),
+                                edtKec.getText().toString().trim(),
+                                edtPos.getText().toString().trim(),
                                 edtLati.getText().toString().trim(),
                                 edtLongi.getText().toString().trim(),
                                 imageViewToByte(imageViewIcon),
@@ -153,7 +171,7 @@ public class UpdateActivity extends AppCompatActivity {
                     }
                 }
                 else{
-                    Toast.makeText(UpdateActivity.this, "Terdapat data yang kosong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateActivity.this, "Tanda (*) tidak boleh kosong", Toast.LENGTH_SHORT).show();
                 }
 
                 //updateList();
