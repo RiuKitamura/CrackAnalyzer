@@ -1,6 +1,7 @@
 package com.mhaa98.crackanalyzer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +14,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     String data_txt;
     int kode_user;
 
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,54 +83,10 @@ public class MainActivity extends AppCompatActivity {
 
         up = findViewById(R.id.upload_btn);
         up.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan");
-                while (cursor.moveToNext()){
-                    int id = cursor.getInt(0);
-                    RequestBody nama_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(1));
-                    RequestBody lantai = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(2));
-                    RequestBody thn = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(3));
-                    RequestBody alamat_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(4));
-                    String lat = cursor.getString(5);
-                    String longg = cursor.getString(6);
-                    if(lat.equals("")||longg.equals(""))
-                    {   lat = "0";
-                        longg = "0";
-                    }
-                    RequestBody lati = RequestBody.create(MediaType.parse("text/plain"), lat);
-                    RequestBody longi = RequestBody.create(MediaType.parse("text/plain"), longg);
-                    byte[] poto = cursor.getBlob(7);
-                    RequestBody nama = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(8));
-                    RequestBody alamat = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(9));
-                    RequestBody nomor = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(10));
-                    RequestBody hasil = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(11));
-                    RequestBody kepercayaan = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursor.getDouble(12)));
-
-
-                    RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), poto);
-                    MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
-                            cursor.getString(1), photoBody);
-
-                    //System.out.println(id+" "+nama_b+" "+lantai+" "+thn+" "+alamat_b+" "+lati+" "+longi+" "+nama+" "+alamat+" "+nomor+" "+hasil+" "+kepercayaan);
-
-                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<ValueModel> call = apiInterface.insertData(nama_b,lantai,thn,alamat_b,lati,longi,photoPart,nama,alamat,nomor,hasil,kepercayaan);
-                    call.enqueue(new Callback<ValueModel>() {
-                        @Override
-                        public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
-                            String msg = response.body().getMessage();
-                            System.out.println("Status: "+ msg);
-                        }
-
-                        @Override
-                        public void onFailure(Call<ValueModel> call, Throwable t) {
-                            System.out.println("Gagal mengirim!");
-                        }
-                    });
-                }
-                //Toast.makeText(MainActivity.this, "Belum tersedia", Toast.LENGTH_SHORT).show();
-                //ambilDataGambar();
+                pupupUpload();
             }
         });
         logout = findViewById(R.id.convert);
@@ -278,6 +239,171 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void pupupUpload() {
+        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);
+        dialogDelete.setTitle("Yakin diupload?");
+        dialogDelete.setMessage("Data bangunan yang akan diupload adalah data yang sudah didiagnosis");
+        dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                upload();
+            }
+        });
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialogDelete.show();
+    }
+
+    private void upload(){
+        Cursor jumdata = LoginActivity.mSQLiteHelper.getData("SELECT COUNT(id) FROM data_bangunan WHERE tingkat_kepercayaan !=0");
+        int jum=0;
+        while (jumdata.moveToNext()){
+            jum=jumdata.getInt(0);
+        }
+
+        final Handler handle = new Handler() {
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                progressDialog.incrementProgressBy(1); // Incremented By Value 2
+            }
+        };
+
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMax(jum); // Progress Dialog Max Value
+        progressDialog.setMessage("Loading..."); // Setting Message
+        progressDialog.setTitle("Sedang mengupload"); // Setting Title
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL); // Progress Dialog Style Horizontal
+        progressDialog.show(); // Display Progress Dialog
+        progressDialog.setCancelable(false);
+
+        final Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_bangunan WHERE tingkat_kepercayaan!=0");
+        while (cursor.moveToNext()){
+
+            final String bgn = cursor.getString(0);
+            final RequestBody id_b = RequestBody.create(MediaType.parse("text/plain"), bgn);
+            RequestBody nama_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(1));
+            RequestBody lantai = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(2));
+            RequestBody thn = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(3));
+            RequestBody alamat_b = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(4));
+            RequestBody prov = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(5));
+            RequestBody kota = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(6));
+            RequestBody kec = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(7));
+            RequestBody pos = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(8));
+            String lat = cursor.getString(9);
+            String longg = cursor.getString(10);
+            if(lat.equals("")||longg.equals(""))
+            {   lat = "0";
+                longg = "0";
+            }
+            RequestBody lati = RequestBody.create(MediaType.parse("text/plain"), lat);
+            RequestBody longi = RequestBody.create(MediaType.parse("text/plain"), longg);
+            byte[] poto = cursor.getBlob(11);
+            RequestBody nama = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(12));
+            RequestBody alamat = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(13));
+            RequestBody nomor = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(14));
+            RequestBody hasil = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(15));
+            RequestBody kepercayaan = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursor.getDouble(16)));
+
+
+            RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), poto);
+            MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
+                    cursor.getString(1), photoBody);
+
+            //System.out.println(id+" "+nama_b+" "+lantai+" "+thn+" "+alamat_b+" "+lati+" "+longi+" "+nama+" "+alamat+" "+nomor+" "+hasil+" "+kepercayaan);
+
+            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+            Call<ValueModel> call = apiInterface.insertData(id_b,nama_b,lantai,thn,alamat_b,prov,kota,kec,pos,lati,longi,photoPart,nama,alamat,nomor,hasil,kepercayaan);
+            call.enqueue(new Callback<ValueModel>() {
+                @Override
+                public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                    String msg = response.body().getMessage();
+                    System.out.println("Status bangunan: "+ msg);
+                    System.out.println(bgn+" ininininininininininininini");
+                    if(msg.equals("berhasil"))
+                    {   Cursor cursorsub = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan = '"+bgn+"'");
+                        int count_s = 0;
+                        while (cursorsub.moveToNext()){
+                            count_s++;
+                            String id_s = cursorsub.getString(1)+"-"+count_s;
+                            RequestBody str_id = RequestBody.create(MediaType.parse("text/plain"), id_s);
+                            RequestBody str_bgn = RequestBody.create(MediaType.parse("text/plain"), cursorsub.getString(1));
+                            RequestBody str_str = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(2)));
+                            RequestBody str_level = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(3)));
+                            byte[] str_foto = cursorsub.getBlob(4);
+                            if(str_foto==null)
+                            {   ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                                Call<ValueModel> callStr = apiInterface.insertStruktur2(str_id, str_bgn, str_str, str_level);
+                                callStr.enqueue(new Callback<ValueModel>() {
+                                    @Override
+                                    public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                                        String msg = response.body().getMessage();
+                                        System.out.println("Status: " + msg);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ValueModel> call, Throwable t) {
+                                        System.out.println("Gagal mengirim data struktur!");
+                                    }
+                                });
+                            }
+                            else {
+                                RequestBody bodyFoto = RequestBody.create(MediaType.parse("image/*"), str_foto);
+                                MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
+                                        cursorsub.getString(1), bodyFoto);
+
+                                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                                Call<ValueModel> callStr = apiInterface.insertStruktur(str_id, str_bgn, str_str, str_level, photoPart);
+                                callStr.enqueue(new Callback<ValueModel>() {
+                                    @Override
+                                    public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                                        String msg = response.body().getMessage();
+                                        System.out.println("Status: " + msg);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ValueModel> call, Throwable t) {
+                                        System.out.println("Gagal mengirim data struktur!");
+                                    }
+                                });
+                            }
+                        }
+
+                    }
+
+                    handle.sendMessage(handle.obtainMessage());
+                    System.out.println(cursor.getPosition()+"-----------------------------");
+                    if (progressDialog.getProgress()+1 == progressDialog.getMax()) {
+                        progressDialog.dismiss();
+                        Toast.makeText(MainActivity.this, "Upload sukses", Toast.LENGTH_SHORT).show();
+                        deleteDataUpload();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ValueModel> call, Throwable t) {
+                    System.out.println("Gagal mengirim data bangunan!");
+                }
+            });
+
+
+
+        }
+
+        //progressDoalog.dismiss();
+        //Toast.makeText(MainActivity.this, "Belum tersedia", Toast.LENGTH_SHORT).show();
+        //ambilDataGambar();
+    }
+
+    private void deleteDataUpload(){
+        LoginActivity.mSQLiteHelper.deleteDataUpload();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
     private boolean haveNetwork(){
         boolean have_WIFI=false;
         boolean have_MobileData=false;
@@ -735,5 +861,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("jum rata -> "+d4+" jum rata2 "+dd4);
         }
     }
+
 
 }

@@ -47,7 +47,7 @@ public class AmbilGambarRetakan extends AppCompatActivity {
     String pathToFile;
     double tmpx, tmpy;
     int panjang, lebar, tengahx, tengahy;
-    TextView keterangan;
+    TextView keterangan, perintah;
 
     double d1, d2, d3, d4, dd1, dd2, dd3, dd4;
     String data_txt;
@@ -70,6 +70,7 @@ public class AmbilGambarRetakan extends AppCompatActivity {
         baris3 = findViewById(R.id.baris_3);
         baris4 = findViewById(R.id.baris_4);
         baris0 = findViewById(R.id.baris_0);
+        perintah = findViewById(R.id.txt_perintah);
 
         keterangan = findViewById(R.id.keterangan_struktur);
 
@@ -81,8 +82,10 @@ public class AmbilGambarRetakan extends AppCompatActivity {
         Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT poto_kondisi FROM data_kerusakan WHERE id="+kode);
         while (cursor.moveToNext()){
             image = cursor.getBlob(0);
-            if (image != null)
-            gambar_retakan.setImageBitmap(BitmapFactory.decodeByteArray(image,0,image.length));
+            if (image != null) {
+                gambar_retakan.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+                perintah.setVisibility(View.GONE);
+            }
         }
 
 

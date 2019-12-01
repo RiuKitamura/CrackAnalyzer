@@ -170,6 +170,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     }
 
+
+
     public void insertDataKerusakan (String id_bangunan, int struktur, int level_kerusakan){
         SQLiteDatabase database = getWritableDatabase();
 
@@ -265,6 +267,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();
         statement.bindString(1, id);
+
+        statement.execute();
+        database.close();
+    }
+
+    public void deleteDataUpload(){
+        SQLiteDatabase database = getWritableDatabase();
+
+        String sql = "DELETE FROM data_bangunan WHERE tingkat_kepercayaan != 0 ";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();
 
         statement.execute();
         database.close();

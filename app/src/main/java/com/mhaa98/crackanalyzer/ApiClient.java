@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient
-{   public static final String B_URL = "https://thrisnaspartan.000webhostapp.com/";
+{   public static final String B_URL = "https://crackanalysis.000webhostapp.com/";
     public static Retrofit retrofit = null;
 
 

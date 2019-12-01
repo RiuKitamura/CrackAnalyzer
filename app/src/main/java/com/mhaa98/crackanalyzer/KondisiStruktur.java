@@ -150,42 +150,70 @@ public class KondisiStruktur extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0){
-                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, poto_kondisi FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<byte[]> image = new ArrayList<>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
+                                image.add(c.getBlob(1));
                             }
-                            moveToUpdate(position,arrID.get(position), 0);
+                            if (image.get(position)==null){
+                                showDialogWrning();
+                                dialog.dismiss();
+                            }
+                            else
+                                moveToUpdate(position,arrID.get(position), 0);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 1){
-                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, poto_kondisi FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<byte[]> image = new ArrayList<>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
+                                image.add(c.getBlob(1));
                             }
-                            moveToUpdate(position,arrID.get(position), 1);
+                            if (image.get(position)==null){
+                                showDialogWrning();
+                                dialog.dismiss();
+                            }
+                            else
+                                moveToUpdate(position,arrID.get(position), 1);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 2){
-                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, poto_kondisi FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<byte[]> image = new ArrayList<>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
+                                image.add(c.getBlob(1));
                             }
-                            moveToUpdate(position,arrID.get(position), 2);
+                            if (image.get(position)==null){
+                                showDialogWrning();
+                                dialog.dismiss();
+                            }
+                            else
+                                moveToUpdate(position,arrID.get(position), 2);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
                         if (which == 3){
-                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
+                            Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id, poto_kondisi FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id ASC");
                             ArrayList<Integer> arrID = new ArrayList<Integer>();
+                            ArrayList<byte[]> image = new ArrayList<>();
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
+                                image.add(c.getBlob(1));
                             }
-                            moveToUpdate(position,arrID.get(position), 3);
+                            if (image.get(position)==null){
+                                showDialogWrning();
+                                dialog.dismiss();
+                            }
+                            else
+                                moveToUpdate(position,arrID.get(position), 3);
 
                             //showDialogUpdate(MainActivity.this, arrID.get(position));
                         }
@@ -212,8 +240,8 @@ public class KondisiStruktur extends AppCompatActivity {
                             while (c.moveToNext()){
                                 arrID.add(c.getInt(0));
                             }
-                            Toast.makeText(KondisiStruktur.this, stuk+" "+(position+1)+" berhasil dihapus", Toast.LENGTH_SHORT).show();
                             LoginActivity.mSQLiteHelper.deleteDataKerusakan(arrID.get(position));
+                            Toast.makeText(KondisiStruktur.this, stuk+" "+(position+1)+" berhasil dihapus", Toast.LENGTH_SHORT).show();
                             finish();
                             overridePendingTransition(0, 0);
                             startActivity(getIntent());
@@ -226,6 +254,18 @@ public class KondisiStruktur extends AppCompatActivity {
                 return true;
             }
         });
+    }
+    private void showDialogWrning() {
+        AlertDialog.Builder dialogDelete = new AlertDialog.Builder(KondisiStruktur.this);
+        dialogDelete.setTitle("Silahkan masukkan gambar stuktur terlebih dahulu!!");
+        dialogDelete.setMessage("Memilih kondisi struktur secara manual tidak bisa dilakukan sebelum gambar kondisi strukur dimasukkan");
+        dialogDelete.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialogDelete.show();
     }
     private void showDialogDelete(final int id) {
         AlertDialog.Builder dialogDelete = new AlertDialog.Builder(KondisiStruktur.this);
