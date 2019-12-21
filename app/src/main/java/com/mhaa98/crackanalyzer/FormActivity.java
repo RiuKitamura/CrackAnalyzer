@@ -18,6 +18,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -92,7 +94,12 @@ public class FormActivity extends AppCompatActivity {
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                methodRequiresTwoPermission();
+                if (haveNetwork()){
+                    methodRequiresTwoPermission();
+                }
+                else if (!haveNetwork()){
+                    Toast.makeText(FormActivity.this, "Tidak ada koneksi", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -147,6 +154,12 @@ public class FormActivity extends AppCompatActivity {
 
                         System.out.println("kkkkkkkkkkkkkk "+id);
 
+                        String instanceLokal="";
+                        Cursor cc = LoginActivity.mSQLiteHelper.getData("SELECT instance FROM data_instance");
+                        while (cc.moveToNext()){
+                            instanceLokal = cc.getString(0);
+                        }
+
                         LoginActivity.mSQLiteHelper.insertData(
                                 nama_bg.getText().toString().trim(),
                                 lantai.getText().toString().trim(),
@@ -162,8 +175,10 @@ public class FormActivity extends AppCompatActivity {
                                 nama.getText().toString().trim(),
                                 alamat.getText().toString().trim(),
                                 no_hp.getText().toString().trim(),
-                                id
+                                id,
+                                instanceLokal
                         );
+
                         Toast.makeText(FormActivity.this, "Sukses", Toast.LENGTH_SHORT).show();
                         Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT id FROM data_bangunan ORDER BY id DESC");
                         String idTmp="";
@@ -224,6 +239,28 @@ public class FormActivity extends AppCompatActivity {
             // Do not have permissions, request them now
             EasyPermissions.requestPermissions(this, "location rationale", 99, perms);
         }
+    }
+
+    private boolean haveNetwork(){
+        boolean have_WIFI=false;
+        boolean have_MobileData=false;
+
+        ConnectivityManager connectivityManager=(ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfos=connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info:networkInfos){
+            if(info.getTypeName().equalsIgnoreCase("WIFI")){
+                if(info.isConnected()){
+                    have_WIFI=true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")){
+                if (info.isConnected()){
+                    have_MobileData=true;
+                }
+            }
+        }
+        return have_MobileData||have_WIFI;
     }
 
     private void SelectImage(){
@@ -453,7 +490,16 @@ public class FormActivity extends AppCompatActivity {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            Toast.makeText(this, "Tidak ada koneksi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
         }
     }
 }
+
+
+
+
+
+
+
+
+

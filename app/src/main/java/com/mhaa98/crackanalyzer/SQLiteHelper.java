@@ -105,10 +105,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public void insertData(String namaB, String lantai, String thn, String alamatB, String prov,
                            String kota, String kecamatan, String kodePos, String lati,
-                           String longi, byte[] image, String nama, String alamat, String hp, String id_global){
+                           String longi, byte[] image, String nama, String alamat, String hp, String id_global, String instance){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO data_bangunan VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,null,null)";
+        String sql = "INSERT INTO data_bangunan VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,null,null,?)";
 
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();
@@ -128,9 +128,35 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         statement.bindString(13,nama);
         statement.bindString(14,alamat);
         statement.bindString(15,hp);
+        statement.bindString(16,instance);
 
         statement.executeInsert();
 
+    }
+    public void insertInstance(){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "INSERT INTO data_instance VALUES(1,'kosong')";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.executeInsert();
+    }
+
+    public void updateInstance(String instance){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "UPDATE data_instance SET instance = ? WHERE id = 1";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindString(1,instance);
+        statement.execute();
+        database.close();
+    }
+
+
+    public void updateInstanceGlobal(String instance){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "UPDATE data_bangunan SET instance_bangunan = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindString(1,instance);
+        statement.execute();
+        database.close();
     }
 
     public void insertUsers(){

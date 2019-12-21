@@ -37,6 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.MediaType;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     final int CAMERA_REQUEST_CODE2 = 0;
 
     ImageView imageViewIcon;
+    TextView addInstance;
 
 
 
@@ -86,7 +88,51 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                pupupUpload();
+                if (haveNetwork()){
+                    Cursor cc = LoginActivity.mSQLiteHelper.getData("SELECT COUNT(id) FROM data_bangunan WHERE tingkat_kepercayaan !=0");
+                    int jumData = 0;
+                    while (cc.moveToNext()){
+                        jumData = cc.getInt(0);
+                    }
+                    if (jumData == 0)
+                        Toast.makeText(MainActivity.this, "Tidak ada yang bisa diupload", Toast.LENGTH_SHORT).show();
+                    else if (jumData > 0){
+
+                        String instanceLokal="";
+                        Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT instance FROM data_instance");
+                        while (c.moveToNext()){
+                            instanceLokal = c.getString(0);
+                        }
+                        final String instanceLokal2=instanceLokal;
+
+                        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                        Call<List<InstanceModel>> call = apiInterface.getInstance();
+                        call.enqueue(new Callback<List<InstanceModel>>() {
+                            @Override
+                            public void onResponse(Call<List<InstanceModel>> call, Response<List<InstanceModel>> response) {
+                                List<InstanceModel> instanceModel = response.body();
+                                boolean ada = false;
+                                for(InstanceModel im:instanceModel) {
+                                    if (instanceLokal2.equals(im.getInstance())) {
+                                        ada = true;
+                                        pupupUpload();
+                                        break;
+                                    }
+                                }
+                                if (ada == false){
+                                    Toast.makeText(MainActivity.this, "Instance tidak ditemukan", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                            @Override
+                            public void onFailure(Call<List<InstanceModel>> call, Throwable t) {
+                            }
+                        });
+                    }
+                }
+                else if(!haveNetwork()){
+                    Toast.makeText(MainActivity.this, "Tidak ada koneksi", Toast.LENGTH_SHORT).show();;
+                }
             }
         });
         logout = findViewById(R.id.convert);
@@ -130,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             up.setText("No Connection");
         }
 
-        imageViewIcon = findViewById(R.id.profile_image);
+
 
         mListView = findViewById(R.id.list1);
         mList = new ArrayList<>();
@@ -237,6 +283,33 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+
+        addInstance = findViewById(R.id.instance_btn);
+        addInstance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cariInstance();
+            }
+        });
+
+        Cursor in_c = LoginActivity.mSQLiteHelper.getData("SELECT instance FROM data_instance");
+        while (in_c.moveToNext()){
+            if (in_c.getString(0).equals("kosong")==false){
+                String txt = in_c.getString(0);
+                addInstance.setText(txt);
+            }
+            else{
+                addInstance.setText("Cari Instance");
+            }
+
+        }
+    }
+
+
+    private void cariInstance() {
+        Intent i = new Intent(this,InstanceActivity.class);
+        startActivity(i);
     }
 
     private void pupupUpload() {
@@ -307,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
             RequestBody nomor = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(14));
             RequestBody hasil = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(15));
             RequestBody kepercayaan = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursor.getDouble(16)));
-
+            RequestBody instance = RequestBody.create(MediaType.parse("text/plain"), cursor.getString(17));
 
             RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), poto);
             MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
@@ -316,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
             //System.out.println(id+" "+nama_b+" "+lantai+" "+thn+" "+alamat_b+" "+lati+" "+longi+" "+nama+" "+alamat+" "+nomor+" "+hasil+" "+kepercayaan);
 
             ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-            Call<ValueModel> call = apiInterface.insertData(id_b,nama_b,lantai,thn,alamat_b,prov,kota,kec,pos,lati,longi,photoPart,nama,alamat,nomor,hasil,kepercayaan);
+            Call<ValueModel> call = apiInterface.insertData(id_b,nama_b,lantai,thn,alamat_b,prov,kota,kec,pos,lati,longi,photoPart,nama,alamat,nomor,hasil,kepercayaan,instance);
             call.enqueue(new Callback<ValueModel>() {
                 @Override
                 public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {

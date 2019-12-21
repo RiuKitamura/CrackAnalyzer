@@ -24,12 +24,14 @@ public class LoginActivity extends AppCompatActivity {
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_bangunan( id VARCHAR PRIMARY KEY," +
                 "nama_bangunan VARCHAR, jumlah_lantai VARCHAR, tahun VARCHAR, alamat_bangunan VARCHAR, provinsi VARCHAR, " +
                 "kota VARCHAR, kecamatan VARCHAR, kode_pos VARCHAR, latitude VARCHAR, " +
-                "longitude VARCHAR, poto BLOB, nama VARCHAR, alamat VARCHAR, nomor_hp VARCHAR, hasil_diagnosis VARCHAR(3), tingkat_kepercayaan double)");
+                "longitude VARCHAR, poto BLOB, nama VARCHAR, alamat VARCHAR, nomor_hp VARCHAR, hasil_diagnosis VARCHAR(3), tingkat_kepercayaan double, instance_bangunan VARCHAR)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_kerusakan(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "id_bangunan VARCHAR, struktur INTEGER, level_kerusakan INTEGER, poto_kondisi BLOB)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_gambar(data_g VARCHAR)");
+
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_instance (id INTEGER, instance VARCHAR)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_user (id_user INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email VARCHAR, pass VARCHAR, status INTEGER)");
@@ -52,6 +54,15 @@ public class LoginActivity extends AppCompatActivity {
         }
         if (s==false){
             mSQLiteHelper.insertUsers();
+        }
+
+        boolean instance = false;
+        Cursor cc = mSQLiteHelper.getData("SELECT id FROM data_instance");
+        while (cc.moveToNext()){
+            instance = true;
+        }
+        if (instance==false){
+            mSQLiteHelper.insertInstance();
         }
 
         login.setOnClickListener(new View.OnClickListener() {
