@@ -6,11 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
 
     Button login;
     public static SQLiteHelper mSQLiteHelper;
+
+   EditText pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,28 +37,13 @@ public class LoginActivity extends AppCompatActivity {
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_instance (id INTEGER, instance VARCHAR)");
 
-        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_user (id_user INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "email VARCHAR, pass VARCHAR, status INTEGER)");
+        mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS data_pin (pass VARCHAR)");
 
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_gejala(id_gejala INTEGER, " +
                 "nama_gejala VARCHAR)");
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_level(id_level INTEGER, " +
                 "level VARCHAR, kondisi VARCHAR, penaganan VARCHAR)");
         mSQLiteHelper.queryData("CREATE TABLE IF NOT EXISTS ds_rules(level INTEGER, gejala INTEGER, cf DOUBLE)");
-
-        boolean s = false;
-        Cursor cursor = mSQLiteHelper.getData("SELECT status FROM data_user");
-        while (cursor.moveToNext()){
-            int status = cursor.getInt(0);
-            if(status==1){
-                Intent i = new Intent(LoginActivity.this,MainActivity.class);
-                startActivity(i);
-            }
-            s = true;
-        }
-        if (s==false){
-            mSQLiteHelper.insertUsers();
-        }
 
         boolean instance = false;
         Cursor cc = mSQLiteHelper.getData("SELECT id FROM data_instance");
@@ -65,11 +54,25 @@ public class LoginActivity extends AppCompatActivity {
             mSQLiteHelper.insertInstance();
         }
 
+        pass = findViewById(R.id.pass);
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this,Login.class);
-                startActivity(i);
+                String password = pass.getText().toString().trim();
+                if(password!=""){
+                    Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT pass FROM data_pin WHERE pass = '"+password+"'");
+                    boolean s = false;
+                    while (cursor.moveToNext()){
+                        Intent i = new Intent(LoginActivity.this,MainActivity.class);
+                        startActivity(i);
+                        s=true;
+
+                    }
+                    if(s==false){
+                        Toast.makeText(LoginActivity.this, "PIN salah", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -85,6 +88,17 @@ public class LoginActivity extends AppCompatActivity {
             mSQLiteHelper.insertLevel();
             mSQLiteHelper.insertRules();
         }
+
+        boolean s = false;
+        Cursor cursor = mSQLiteHelper.getData("SELECT * FROM data_pin");
+        while (cursor.moveToNext()){
+            s = true;
+        }
+        if (s==false){
+            Intent i = new Intent(this, GantiPinActivity.class);
+            startActivity(i);
+        }
+
     }
     @Override
     public void onBackPressed() {

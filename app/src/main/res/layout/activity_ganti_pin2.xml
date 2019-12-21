@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GantiPin2Activity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="20dp"
+            android:clipToPadding="false">
+            <ImageView
+                android:id="@+id/icon_app"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@mipmap/icon_app"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"/>
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ganti Pin"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_below="@id/icon_app"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="40dp"
+                android:textStyle="bold"/>
+
+
+            <EditText
+                android:id="@+id/pin_lama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_bg"
+                android:layout_below="@id/app_name"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:hint="Masukkan 4 digit PIN lama"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:padding="10dp"
+                android:maxLength="4"
+                android:inputType="numberPassword"/>
+
+            <EditText
+                android:id="@+id/pin_baru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_bg"
+                android:layout_below="@id/pin_lama"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:hint="Masukkan 4 digit PIN baru"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:padding="10dp"
+                android:maxLength="4"
+                android:inputType="numberPassword"/>
+
+            <Button
+                android:id="@+id/pin_simpan_btn"
+                android:layout_below="@id/pin_baru"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/button_bg"
+                android:text="Simpan"
+                android:textColor="@color/colorWhite"
+                android:textAllCaps="false"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>

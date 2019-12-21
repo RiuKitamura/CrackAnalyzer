@@ -28,7 +28,7 @@ public class Login extends AppCompatActivity {
                     Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_user WHERE email = '"+mail+"' AND pass = '"+password+"'");
                     boolean s = false;
                     while (cursor.moveToNext()){
-                        LoginActivity.mSQLiteHelper.sudahMasuk(cursor.getInt(0));
+                        //LoginActivity.mSQLiteHelper.sudahMasuk(cursor.getInt(0));
                         Intent i = new Intent(Login.this,MainActivity.class);
                         startActivity(i);
                         s=true;

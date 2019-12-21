@@ -50,7 +50,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     Button up;
-    ImageButton logout;
+    ImageButton gantiPin;
 
     ListView mListView;
     ArrayList<Model> mList;
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
     double d1, d2, d3, d4, dd1, dd2, dd3, dd4;
     String data_txt;
-    int kode_user;
 
     ProgressDialog progressDialog;
 
@@ -78,10 +77,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Cursor cc = LoginActivity.mSQLiteHelper.getData("SELECT id_user FROM data_user WHERE status = 1");
-        while (cc.moveToNext()){
-            kode_user = cc.getInt(0);
-        }
 
         up = findViewById(R.id.upload_btn);
         up.setOnClickListener(new View.OnClickListener() {
@@ -135,47 +130,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        logout = findViewById(R.id.convert);
-        logout.setOnClickListener(new View.OnClickListener() {
+        gantiPin = findViewById(R.id.convert);
+        gantiPin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder dialogDelete = new AlertDialog.Builder(MainActivity.this);
-                dialogDelete.setTitle("Logout!!");
-                dialogDelete.setMessage("Apa anda yakin ingin logout?");
-                dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try{
-                            LoginActivity.mSQLiteHelper.sudahKeluar(kode_user);
-                            Intent i = new Intent(MainActivity.this,LoginActivity.class);
-                            startActivity(i);
-                        }
-                        catch (Exception e){
-                            Log.e("error", e.getMessage());
-                        }
-                        updateList();
-                    }
-                });
-                dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                dialogDelete.show();
-
-
-//                saveToTxt();
+                Intent i = new Intent(MainActivity.this, GantiPin2Activity.class);
+                startActivity(i);
             }
         });
-
-        if(haveNetwork()){
-            up.setText("Upload");
-        }
-        else if(!haveNetwork()){
-            up.setText("No Connection");
-        }
-
 
 
         mListView = findViewById(R.id.list1);

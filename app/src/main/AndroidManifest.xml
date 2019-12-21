@@ -22,9 +22,13 @@
         android:roundIcon="@mipmap/icon_app"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".GantiPin2Activity"></activity>
+        <activity
+            android:name=".GantiPinActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".InstanceActivity"
-            android:parentActivityName=".MainActivity" ></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".Login"
             android:theme="@style/AppTheme.NoActionBar" />

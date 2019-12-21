@@ -133,6 +133,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         statement.executeInsert();
 
     }
+    public void insertPin(String pin){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "INSERT INTO data_pin VALUES(?)";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();
+
+        statement.bindString(1,pin);
+
+        statement.executeInsert();
+    }
+
+    public void updatePin(String pin){
+        SQLiteDatabase database = getWritableDatabase();
+        String sql = "UPDATE data_pin SET pass = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.bindString(1,pin);
+        statement.execute();
+        database.close();
+    }
+
+
     public void insertInstance(){
         SQLiteDatabase database = getWritableDatabase();
         String sql = "INSERT INTO data_instance VALUES(1,'kosong')";
@@ -159,21 +180,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public void insertUsers(){
-        SQLiteDatabase database = getWritableDatabase();
-        String sql = "INSERT INTO data_user VALUES(NULL,'users@gmail.com','masuk',0)";
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.executeInsert();
-    }
-
-    public void sudahMasuk(int id){
-        SQLiteDatabase database = getWritableDatabase();
-        String sql = "UPDATE data_user SET status = 1 WHERE id_user = ?";
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.bindDouble(1,(double) id);
-        statement.execute();
-        database.close();
-    }
+//
+//    public void sudahMasuk(int id){
+//        SQLiteDatabase database = getWritableDatabase();
+//        String sql = "UPDATE data_user SET status = 1 WHERE id_user = ?";
+//        SQLiteStatement statement = database.compileStatement(sql);
+//        statement.bindDouble(1,(double) id);
+//        statement.execute();
+//        database.close();
+//    }
     public void sudahKeluar(int id){
         SQLiteDatabase database = getWritableDatabase();
         String sql = "UPDATE data_user SET status = 0 WHERE id_user = ?";
