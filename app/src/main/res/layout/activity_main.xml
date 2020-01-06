@@ -25,10 +25,22 @@
             android:paddingVertical="20dp"
             android:textAlignment="gravity"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="100dp"
             android:textColor="@color/colorWhite"
             android:textSize="20sp"
             android:drawableLeft="@drawable/ic_search"
-            android:drawablePadding="4dp"/>
+            android:drawablePadding="4dp"
+            android:singleLine="true"/>
+        <ImageButton
+            android:id="@+id/web_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_web"
+            android:background="@null"
+            android:layout_toLeftOf="@id/convert"
+            android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"/>
+
         <ImageButton
             android:id="@+id/convert"
             android:layout_width="wrap_content"

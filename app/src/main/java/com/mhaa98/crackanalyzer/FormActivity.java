@@ -4,19 +4,16 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,7 +22,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,7 +32,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -50,9 +45,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -135,7 +127,7 @@ public class FormActivity extends AppCompatActivity {
                 if (nama_bg.getText().length() != 0 && lantai.getText().length() != 0 && tahun.getText().length() != 0
                         && alamat_bg.getText().length() != 0 && prov.getText().length() != 0
                         && kota.getText().length() != 0 && kec.getText().length() != 0&& isi_gambar != false
-                        && nama.getText().length() != 0 && no_hp.getText().length() != 0) {
+                        && nama.getText().length() != 0 && no_hp.getText().length() != 0 && pos.getText().length() != 0) {
                     next.setEnabled(false);
                     try {
                         System.out.println("nama b " + nama_bg.getText());
@@ -232,6 +224,9 @@ public class FormActivity extends AppCompatActivity {
                                 // Display in Toast
                                 getAddress(location.getLatitude(), location.getLongitude());
 
+                            }
+                            else {
+                                Toast.makeText(FormActivity.this, "Pastikan GPS aktif", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

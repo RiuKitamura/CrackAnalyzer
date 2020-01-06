@@ -167,7 +167,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Kode Pos"/>
+                        android:text="Kode Pos*"/>
                     <EditText
                         android:id="@+id/alamat_pos_bangunan"
                         android:layout_width="match_parent"

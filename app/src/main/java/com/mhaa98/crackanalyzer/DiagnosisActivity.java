@@ -2,10 +2,12 @@ package com.mhaa98.crackanalyzer;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class DiagnosisActivity extends AppCompatActivity {
 
@@ -112,7 +115,23 @@ public class DiagnosisActivity extends AppCompatActivity {
         diagnosis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                diagnosis(kode);
+                AlertDialog.Builder dialogDelete = new AlertDialog.Builder(DiagnosisActivity.this);
+                dialogDelete.setTitle("Yakin didiagnosis?");
+                dialogDelete.setMessage("Hasil diagnosis tidak dapat dirubah");
+                dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        diagnosis(kode);
+                    }
+                });
+                dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialogDelete.show();
+
             }
         });
     }

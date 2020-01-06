@@ -50,7 +50,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     Button up;
-    ImageButton gantiPin;
+    ImageButton gantiPin, webBtn;
 
     ListView mListView;
     ArrayList<Model> mList;
@@ -93,36 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Tidak ada yang bisa diupload", Toast.LENGTH_SHORT).show();
                     else if (jumData > 0){
 
-                        String instanceLokal="";
-                        Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT instance FROM data_instance");
-                        while (c.moveToNext()){
-                            instanceLokal = c.getString(0);
-                        }
-                        final String instanceLokal2=instanceLokal;
-
-                        ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                        Call<List<InstanceModel>> call = apiInterface.getInstance();
-                        call.enqueue(new Callback<List<InstanceModel>>() {
-                            @Override
-                            public void onResponse(Call<List<InstanceModel>> call, Response<List<InstanceModel>> response) {
-                                List<InstanceModel> instanceModel = response.body();
-                                boolean ada = false;
-                                for(InstanceModel im:instanceModel) {
-                                    if (instanceLokal2.equals(im.getInstance())) {
-                                        ada = true;
-                                        pupupUpload();
-                                        break;
-                                    }
-                                }
-                                if (ada == false){
-                                    Toast.makeText(MainActivity.this, "Instance tidak ditemukan", Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                            @Override
-                            public void onFailure(Call<List<InstanceModel>> call, Throwable t) {
-                            }
-                        });
+                        pupupUpload();
                     }
                 }
                 else if(!haveNetwork()){
@@ -139,13 +110,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        webBtn = findViewById(R.id.web_btn);
+        webBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent webIntent = new Intent(android.content.Intent.ACTION_VIEW);
+                webIntent.setData(Uri.parse("http://sdms.if.unram.ac.id"));
+                startActivity(webIntent);
+
+            }
+        });
+
 
         mListView = findViewById(R.id.list1);
         mList = new ArrayList<>();
         mAdapter = new HistoryListAdapter(this, R.layout.history_layout, mList);
         mListView.setAdapter(mAdapter);
 
-        //mSQLiteHelper.getReadableDatabase();
         //GET ALL DATA FROM SQLITE
         Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
                 "longitude, nama, alamat, nomor_hp, tingkat_kepercayaan FROM data_bangunan ORDER BY id DESC");
@@ -281,7 +262,36 @@ public class MainActivity extends AppCompatActivity {
         dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                upload();
+                String instanceLokal="";
+                Cursor c = LoginActivity.mSQLiteHelper.getData("SELECT instance FROM data_instance");
+                while (c.moveToNext()){
+                    instanceLokal = c.getString(0);
+                }
+                final String instanceLokal2=instanceLokal;
+
+                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                Call<List<InstanceModel>> call = apiInterface.getInstance();
+                call.enqueue(new Callback<List<InstanceModel>>() {
+                    @Override
+                    public void onResponse(Call<List<InstanceModel>> call, Response<List<InstanceModel>> response) {
+                        List<InstanceModel> instanceModel = response.body();
+                        boolean ada = false;
+                        for(InstanceModel im:instanceModel) {
+                            if (instanceLokal2.equals(im.getInstance())) {
+                                ada = true;
+                                upload();
+                                break;
+                            }
+                        }
+                        if (ada == false){
+                            Toast.makeText(MainActivity.this, "Instance tidak ditemukan", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                    @Override
+                    public void onFailure(Call<List<InstanceModel>> call, Throwable t) {
+                    }
+                });
             }
         });
         dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -309,8 +319,8 @@ public class MainActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(MainActivity.this);
         progressDialog.setMax(jum); // Progress Dialog Max Value
-        progressDialog.setMessage("Loading..."); // Setting Message
-        progressDialog.setTitle("Sedang mengupload"); // Setting Title
+        progressDialog.setMessage("Sedang mengupload..."); // Setting Message
+        progressDialog.setTitle("Pastikan jaringan anda stabil!"); // Setting Title
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL); // Progress Dialog Style Horizontal
         progressDialog.show(); // Display Progress Dialog
         progressDialog.setCancelable(false);
@@ -358,87 +368,112 @@ public class MainActivity extends AppCompatActivity {
                     String msg = response.body().getMessage();
                     System.out.println("Status bangunan: "+ msg);
                     System.out.println(bgn+" ininininininininininininini");
-                    if(msg.equals("berhasil"))
-                    {   Cursor cursorsub = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan = '"+bgn+"'");
-                        int count_s = 0;
-                        while (cursorsub.moveToNext()){
-                            count_s++;
-                            String id_s = cursorsub.getString(1)+"-"+count_s;
-                            RequestBody str_id = RequestBody.create(MediaType.parse("text/plain"), id_s);
-                            RequestBody str_bgn = RequestBody.create(MediaType.parse("text/plain"), cursorsub.getString(1));
-                            RequestBody str_str = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(2)));
-                            RequestBody str_level = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(3)));
-                            byte[] str_foto = cursorsub.getBlob(4);
-                            if(str_foto==null)
-                            {   ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                                Call<ValueModel> callStr = apiInterface.insertStruktur2(str_id, str_bgn, str_str, str_level);
-                                callStr.enqueue(new Callback<ValueModel>() {
-                                    @Override
-                                    public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
-                                        String msg = response.body().getMessage();
-                                        System.out.println("Status: " + msg);
+//                    if(msg.equals("berhasil")) {
+                    Cursor cursorsub = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan = '"+bgn+"'");
+                    int count_s = 0;
+                    while (cursorsub.moveToNext()){
+                        count_s++;
+                        String id_s = cursorsub.getString(1)+"-"+count_s;
+                        RequestBody str_id = RequestBody.create(MediaType.parse("text/plain"), id_s);
+                        RequestBody str_bgn = RequestBody.create(MediaType.parse("text/plain"), cursorsub.getString(1));
+                        RequestBody str_str = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(2)));
+                        RequestBody str_level = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(cursorsub.getInt(3)));
+                        byte[] str_foto = cursorsub.getBlob(4);
+                        if(str_foto==null)
+                        {
+                            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                            Call<ValueModel> callStr = apiInterface.insertStruktur2(str_id, str_bgn, str_str, str_level);
+                            callStr.enqueue(new Callback<ValueModel>() {
+                                @Override
+                                public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                                    String msg = response.body().getMessage();
+                                    System.out.println("Status: " + msg);
+
+                                    if (progressDialog.getProgress() == progressDialog.getMax()) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(MainActivity.this, "Upload sukses", Toast.LENGTH_SHORT).show();
+
+                                        overridePendingTransition(0, 0);
+                                        startActivity(getIntent());
+                                        overridePendingTransition(0, 0);
+
                                     }
 
-                                    @Override
-                                    public void onFailure(Call<ValueModel> call, Throwable t) {
-                                        System.out.println("Gagal mengirim data struktur!");
-                                    }
-                                });
-                            }
-                            else {
-                                RequestBody bodyFoto = RequestBody.create(MediaType.parse("image/*"), str_foto);
-                                MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
-                                        cursorsub.getString(1), bodyFoto);
+                                }
 
-                                ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                                Call<ValueModel> callStr = apiInterface.insertStruktur(str_id, str_bgn, str_str, str_level, photoPart);
-                                callStr.enqueue(new Callback<ValueModel>() {
-                                    @Override
-                                    public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
-                                        String msg = response.body().getMessage();
-                                        System.out.println("Status: " + msg);
-                                    }
+                                @Override
+                                public void onFailure(Call<ValueModel> call, Throwable t) {
+                                    System.out.println("Gagal mengirim data struktur!");
+                                }
+                            });
+                        }
+                        else {
+                            RequestBody bodyFoto = RequestBody.create(MediaType.parse("image/*"), str_foto);
+                            MultipartBody.Part photoPart = MultipartBody.Part.createFormData("photo",
+                                    cursorsub.getString(1), bodyFoto);
 
-                                    @Override
-                                    public void onFailure(Call<ValueModel> call, Throwable t) {
-                                        System.out.println("Gagal mengirim data struktur!");
+                            ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                            Call<ValueModel> callStr = apiInterface.insertStruktur(str_id, str_bgn, str_str, str_level, photoPart);
+                            callStr.enqueue(new Callback<ValueModel>() {
+                                @Override
+                                public void onResponse(Call<ValueModel> call, Response<ValueModel> response) {
+                                    String msg = response.body().getMessage();
+                                    System.out.println("Status: " + msg);
+
+                                    if (progressDialog.getProgress() == progressDialog.getMax()) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(MainActivity.this, "Upload sukses", Toast.LENGTH_SHORT).show();
+
+                                        overridePendingTransition(0, 0);
+                                        startActivity(getIntent());
+                                        overridePendingTransition(0, 0);
+
                                     }
-                                });
-                            }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ValueModel> call, Throwable t) {
+                                    System.out.println("Gagal mengirim data struktur!");
+                                }
+                            });
                         }
 
                     }
+                    LoginActivity.mSQLiteHelper.deleteDataUploadStruktur(bgn);
+                    Cursor cursorCek = LoginActivity.mSQLiteHelper.getData("SELECT  COUNT(*) FROM data_kerusakan WHERE id_bangunan = '"+bgn+"'");
+                    int jumSisaStruktur = 0;
+                    while (cursorCek.moveToNext()){
+                        jumSisaStruktur = cursorCek.getInt(0);
+                    }
+                    if (jumSisaStruktur==0) LoginActivity.mSQLiteHelper.deleteDataUploadBangunan(bgn);
 
                     handle.sendMessage(handle.obtainMessage());
                     System.out.println(cursor.getPosition()+"-----------------------------");
-                    if (progressDialog.getProgress()+1 == progressDialog.getMax()) {
-                        progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Upload sukses", Toast.LENGTH_SHORT).show();
-                        deleteDataUpload();
-                    }
+
+
+
+//                    }
+
                 }
 
                 @Override
                 public void onFailure(Call<ValueModel> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Upload Gagal", Toast.LENGTH_SHORT).show();
                     System.out.println("Gagal mengirim data bangunan!");
                 }
             });
 
 
-
         }
+
+
 
         //progressDoalog.dismiss();
         //Toast.makeText(MainActivity.this, "Belum tersedia", Toast.LENGTH_SHORT).show();
         //ambilDataGambar();
     }
 
-    private void deleteDataUpload(){
-        LoginActivity.mSQLiteHelper.deleteDataUpload();
-        overridePendingTransition(0, 0);
-        startActivity(getIntent());
-        overridePendingTransition(0, 0);
-    }
     private boolean haveNetwork(){
         boolean have_WIFI=false;
         boolean have_MobileData=false;
@@ -516,69 +551,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-//    private void showDialogUpdate(Activity activity, final int position){
-//        final Dialog dialog = new Dialog(activity);
-//        dialog.setContentView(R.layout.update_dialog);
-//        dialog.setTitle("Update");
-//
-//        imageViewIcon = dialog.findViewById(R.id.up_add_photo_btn);
-//        final EditText edtNamaB = dialog.findViewById(R.id.up_nama_bangunan);
-//        final EditText edtLantai = dialog.findViewById(R.id.up_jml_lantai);
-//        final EditText edtThn = dialog.findViewById(R.id.up_thn_dibuat);
-//        final EditText edtAlamatB = dialog.findViewById(R.id.up_alamat_bangunan);
-//        final EditText edtLati = dialog.findViewById(R.id.up_latitude);
-//        final EditText edtLongi = dialog.findViewById(R.id.up_longitude);
-//        final EditText edtNama = dialog.findViewById(R.id.up_nama_person);
-//        final EditText edtAlamat = dialog.findViewById(R.id.up_alamat_person);
-//        final EditText edtNomor = dialog.findViewById(R.id.up_nomor_person);
-//        Button btnUpdate = dialog.findViewById(R.id.update_btn);
-//
-//
-//        int width = (int) (activity.getResources().getDisplayMetrics().widthPixels*0.95);
-//        int height = (int) (activity.getResources().getDisplayMetrics().heightPixels*0.7);
-//        dialog.getWindow().setLayout(width,height);
-//        dialog.show();
-//
-//        imageViewIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                SelectImage();
-//            }
-//        });
-//        btnUpdate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                try{
-//                    mSQLiteHelper.updateData(
-//                            edtNamaB.getText().toString().trim(),
-//                            edtLantai.getText().toString().trim(),
-//                            edtThn.getText().toString().trim(),
-//                            edtAlamatB.getText().toString().trim(),
-//                            edtLati.getText().toString().trim(),
-//                            edtLongi.getText().toString().trim(),
-//                            imageViewToByte(imageViewIcon),
-//                            edtNama.getText().toString().trim(),
-//                            edtAlamat.getText().toString().trim(),
-//                            edtNomor.getText().toString().trim(),
-//                            position
-//
-//                    );
-//                    dialog.dismiss();
-//                    Toast.makeText(getApplicationContext(), "Update sukses", Toast.LENGTH_SHORT).show();
-//                    finish();
-//                    overridePendingTransition(0, 0);
-//                    startActivity(getIntent());
-//                    overridePendingTransition(0, 0);
-//                }
-//                catch (Exception error){
-//                    Log.e("Update error", error.getMessage());
-//                }
-//                updateList();
-//            }
-//        });
-//
-//    }
-
 
     private void updateList() {
         Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT id, nama_bangunan, jumlah_lantai, tahun, alamat_bangunan,latitude, " +
@@ -592,7 +564,6 @@ public class MainActivity extends AppCompatActivity {
             String alamatB = cursor.getString(4);
             String lati = cursor.getString(5);
             String longi = cursor.getString(6);
-//            byte[] image = cursor.getBlob(7);
             String nama = cursor.getString(7);
             String alamat = cursor.getString(8);
             String nomor = cursor.getString(9);
@@ -600,37 +571,6 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
-//    private void SelectImage(){
-//
-//        final CharSequence[] items={"Camera","Gallery", "Cancel"};
-//
-//        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
-//        builder.setTitle("Add Image");
-//
-//        builder.setItems(items, new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                if (items[i].equals("Camera")) {
-//
-//                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                    startActivityForResult(intent, CAMERA_REQUEST_CODE1);
-//
-//                } else if (items[i].equals("Gallery")) {
-//
-//                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                    intent.setType("image/*");
-//                    //startActivityForResult(intent.createChooser(intent, "Select File"), SELECT_FILE);
-//                    startActivityForResult(intent, CAMERA_REQUEST_CODE2);
-//
-//                } else if (items[i].equals("Cancel")) {
-//                    dialogInterface.dismiss();
-//                }
-//            }
-//        });
-//        builder.show();
-//
-//    }
 
     @Override
     public  void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -653,14 +593,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    //    private static byte[] imageViewToByte(ImageView image) {
-//        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//        byte[] byteArray = stream.toByteArray();
-//        return byteArray;
-//    }
     @Override
     public void onBackPressed() {
         finishAffinity();

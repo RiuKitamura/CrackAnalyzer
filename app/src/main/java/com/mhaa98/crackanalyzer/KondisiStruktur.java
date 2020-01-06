@@ -100,7 +100,6 @@ public class KondisiStruktur extends AppCompatActivity {
                         mList.add(new Model2(id, id_bangunan,struktur,level));
                         break;
                     }
-                    Toast.makeText(KondisiStruktur.this, "+ 1 Kolom", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==2){
                     LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,2,0);
@@ -114,11 +113,9 @@ public class KondisiStruktur extends AppCompatActivity {
                         mList.add(new Model2(id, id_bangunan,struktur,level));
                         break;
                     }
-                    Toast.makeText(KondisiStruktur.this, "+ 1 Balok", Toast.LENGTH_SHORT).show();
                 }
                 else if(stuktur==3){
                     LoginActivity.mSQLiteHelper.insertDataKerusakan(kode,3,0);
-                    Toast.makeText(KondisiStruktur.this, "+ 1 Dinding", Toast.LENGTH_SHORT).show();
                     Cursor cursor = LoginActivity.mSQLiteHelper.getData("SELECT * FROM data_kerusakan WHERE id_bangunan="+kode+" AND struktur="+stuktur+" ORDER BY id DESC");
                     while (cursor.moveToNext()){
                         int id = cursor.getInt(0);

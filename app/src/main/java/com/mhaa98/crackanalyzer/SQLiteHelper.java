@@ -313,12 +313,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public void deleteDataUpload(){
+    public void deleteDataUploadBangunan(String id){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "DELETE FROM data_bangunan WHERE tingkat_kepercayaan != 0 ";
+        String sql = "DELETE FROM data_bangunan WHERE id = ?";
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();
+        statement.bindString(1, id);
+
+        statement.execute();
+        database.close();
+    }
+
+    public void deleteDataUploadStruktur(String id){
+        SQLiteDatabase database = getWritableDatabase();
+
+        String sql = "DELETE FROM data_kerusakan WHERE id_bangunan = ?";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();
+        statement.bindString(1, id);
 
         statement.execute();
         database.close();

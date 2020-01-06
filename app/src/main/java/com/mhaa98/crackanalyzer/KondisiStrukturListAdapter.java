@@ -81,7 +81,7 @@ public class KondisiStrukturListAdapter extends BaseAdapter {
         holder.strukturTxt.setText(a+"");
         System.out.println("ini dia aaaa "+model.getLevel());
         if(model.getLevel()==0){
-            holder.textKondisi.setText("Tidak Ringan");
+            holder.textKondisi.setText("Tidak Rusak");
             holder.textKondisi.setTextColor(Color.rgb(0,0,0));
         }
         else if(model.getLevel()==1){
